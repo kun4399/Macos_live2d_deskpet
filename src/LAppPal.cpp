@@ -15,8 +15,9 @@
 //#include <GLFW/glfw3.h>
 #include <Model/CubismMoc.hpp>
 #include "LAppDefine.hpp"
-#include <Windows.h>
+#include <chrono>
 #include <QtDebug>
+#include "stdio.h"
 using std::endl;
 using namespace Csm;
 using namespace std;
@@ -46,7 +47,7 @@ csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
     {
         if (DebugLogEnable)
         {
-            PrintLog("file open error1");
+            PrintLog("file open error");
         }
         return NULL;
     }
@@ -70,7 +71,7 @@ csmFloat32  LAppPal::GetDeltaTime()
 
 void LAppPal::UpdateTime()
 {
-    s_currentFrame = ((double)timeGetTime())/1000.0f;
+    s_currentFrame=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     //qDebug("LAppPal::UpdateTime():%lf",s_currentFrame);
     //s_currentFrame = glfwGetTime();
     s_deltaTime = s_currentFrame - s_lastFrame;
@@ -83,7 +84,8 @@ void LAppPal::PrintLog(const csmChar* format, ...)
     va_list args;
     csmChar buf[256];
     va_start(args, format);
-    vsnprintf_s(buf, sizeof(buf), format, args); // 標準出力でレンダリング
+//    vsnprintf_s(buf, sizeof(buf), format, args); // 標準出力でレンダリング
+    vsnprintf(buf, sizeof(buf), format, args);
 #ifdef CSM_DEBUG_MEMORY_LEAKING
 // メモリリークチェック時は大量の標準出力がはしり重いのでprintfを利用する
     std::printf(buf);

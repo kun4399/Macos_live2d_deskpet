@@ -5,7 +5,7 @@
 #include "resource_loader.hpp"
 #include "message_queue.hpp"
 #include "event_handler.hpp"
-#define  CONFIG_JSON_FILE_PATH  "Resources/config.json"
+#define  CONFIG_JSON_FILE_PATH  "/Users/gaoyukun/github/qf/Resources/config.json"
 namespace
 {
     constexpr int config_file_size = 4096;
@@ -19,8 +19,7 @@ bool resource_loader::initialize()
         return true;
     }
 
-    FILE* fd;
-    fopen_s(&fd,CONFIG_JSON_FILE_PATH,"r");
+    FILE* fd=std::fopen(CONFIG_JSON_FILE_PATH,"r");
     if(fd == NULL)
     {
         QF_LOG_ERROR("open file fail:%s",CONFIG_JSON_FILE_PATH);
@@ -308,7 +307,7 @@ bool resource_loader::update_current_model_position(int x,int y)
         if(node!=NULL&&cJSON_IsArray(node))
         {
             int index = current_model-&model_list[0];
-            //QF_LOG_INFO("index:%d",index);
+            QF_LOG_INFO("index:%d",index);
             cJSON* model_ptr=cJSON_GetArrayItem(node,index);
             if(model_ptr!=NULL&&cJSON_IsObject(model_ptr))
             {

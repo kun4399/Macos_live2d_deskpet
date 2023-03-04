@@ -2,10 +2,10 @@
 #define GLWIDGET_H
 
 #include <GL/glew.h>
-#include <QGLWidget>
+#include "QtOpenGLWidgets/QOpenGLWidget"
 #include <QTimer>
 
-class GLWidget : public QGLWidget
+class GLWidget : public QOpenGLWidget
 {
     Q_OBJECT
     QTimer* ter;

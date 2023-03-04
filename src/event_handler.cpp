@@ -46,8 +46,7 @@ namespace
                     const char* config_path = resource_loader::get_instance().get_config_path();
                     if(config!=NULL)
                     {
-                        FILE* fd;
-                        fopen_s(&fd,config_path ,"w");
+                        FILE* fd=std::fopen(config_path ,"w");
                         if(fd == NULL)
                         {
                             QF_LOG_ERROR("open file fail:%s",config_path);

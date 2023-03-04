@@ -16,27 +16,26 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 set(BUILD_UTILS OFF CACHE BOOL "" FORCE)
-find_package(Qt5 COMPONENTS Widgets OpenGL REQUIRED)
+find_package(Qt6 COMPONENTS Widgets OpenGL REQUIRED)
+
+find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets)
 
 add_library(Live2DCubismCore STATIC IMPORTED)
 set(CRT MT)
 set_target_properties(Live2DCubismCore
   PROPERTIES
-    IMPORTED_LOCATION_DEBUG
-    ${CMAKE_CURRENT_SOURCE_DIR}/third/live2d/lib/Live2DCubismCore_${CRT}d.lib
-    IMPORTED_LOCATION_RELEASE
-    ${CMAKE_CURRENT_SOURCE_DIR}/third/live2d/lib/Live2DCubismCore_${CRT}.lib
-    INTERFACE_INCLUDE_DIRECTORIES
-    ${CMAKE_CURRENT_SOURCE_DIR}/third/live2d/inc/
+        IMPORTED_LOCATION
+        /Users/gaoyukun/Downloads/CubismSdkForNative-4-r.6/Core/lib/macos/arm64/libLive2DCubismCore.a
+    INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/third/live2d/inc
 )
 
-set(GLEW_PATH third/glew)
-set(GLFW_PATH third/glfw)
+set(GLEW_PATH /Users/gaoyukun/github/qf/third/glew)
+set(GLFW_PATH /Users/gaoyukun/github/qf/third/glfw)
 add_subdirectory(${GLEW_PATH}/build/cmake)
 #add_subdirectory(${GLFW_PATH})
 set(FRAMEWORK_SOURCE OpenGL)
 add_subdirectory(Framework)
-target_compile_definitions(Framework PUBLIC CSM_TARGET_WIN_GL)
+target_compile_definitions(Framework PUBLIC CSM_TARGET_MAC_GL)
 target_include_directories(Framework PUBLIC ${GLEW_PATH}/include)
 target_link_libraries(Framework Live2DCubismCore glew_s)
 find_package(OpenGL REQUIRED)
@@ -49,8 +48,12 @@ include_directories(src/glwidget.h)
 include_directories(third/stb)
 aux_source_directory(src QF_SOURCES_FILE)
 
-add_executable(QuietFriend ${QF_SOURCES_FILE})
-set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup")
-target_link_libraries(QuietFriend PRIVATE Qt5::Widgets Qt5::OpenGL glew_s Framework winmm.lib user32.lib dwmapi.lib
-    debug -NODEFAULTLIB:libcmtd.lib
-    optimized -NODEFAULTLIB:libcmt.lib)
+add_executable(QuietFriend)
+add_subdirectory(src)
+
+set_target_properties(QuietFriend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+target_link_libraries(QuietFriend PRIVATE Qt6::Widgets Qt6::OpenGL glew_s Framework Qt6::OpenGLWidgets)
+#set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup")
+#target_link_libraries(QuietFriend PRIVATE Qt5::Widgets Qt5::OpenGL glew_s Framework winmm.lib user32.lib dwmapi.lib
+#    debug -NODEFAULTLIB:libcmtd.lib
+#    optimized -NODEFAULTLIB:libcmt.lib)

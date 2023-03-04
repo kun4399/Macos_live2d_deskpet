@@ -1,6 +1,4 @@
 ﻿#include "mainwindow.h"
-#include <Windows.h>
-#include <dwmapi.h>
 #include <QMenu>
 #include "./ui_mainwindow.h"
 #include "qf_log.h"
@@ -9,6 +7,9 @@
 #include "event_handler.hpp"
 #include <QMessageBox>
 #include <QMouseEvent>
+#include <QtGui/QGuiApplication>
+#include "qaction.h"
+#include "qactiongroup.h"
 namespace  {
     int pos_x;
     int pos_y;
@@ -21,16 +22,18 @@ MainWindow::MainWindow(QWidget *parent,QApplication* mapp)
 {
     assert(app != nullptr);
     auto viewId = this->winId();
-    DWM_BLURBEHIND bb = { 0 };
-    HRGN hRgn = CreateRectRgn(0, 0, -1, -1); //应用毛玻璃的矩形范围，
-    //参数(0,0,-1,-1)可以让整个窗口客户区变成透明的，而鼠标是可以捕获到透明的区域
-    bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-    bb.hRgnBlur = hRgn;
-    bb.fEnable = TRUE;
-    DwmEnableBlurBehindWindow((HWND)viewId, &bb);
+//    DWM_BLURBEHIND bb = { 0 };
+//    HRGN hRgn = CreateRectRgn(0, 0, -1, -1); //应用毛玻璃的矩形范围，
+//    //参数(0,0,-1,-1)可以让整个窗口客户区变成透明的，而鼠标是可以捕获到透明的区域
+//    bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+//    bb.hRgnBlur = hRgn;
+//    bb.fEnable = TRUE;
+//    DwmEnableBlurBehindWindow((HWND)viewId, &bb);
     int cxScreen,cyScreen;
-    cxScreen=GetSystemMetrics(SM_CXSCREEN);
-    cyScreen=GetSystemMetrics(SM_CYSCREEN);
+//    cxScreen=GetSystemMetrics(SM_CXSCREEN);
+//    cyScreen=GetSystemMetrics(SM_CYSCREEN);
+    cxScreen=QApplication::primaryScreen()->availableGeometry().width();
+    cyScreen=QApplication::primaryScreen()->availableGeometry().height();
     this->mouse_press = false;
     //qDebug("x: %d y:%d",cxScreen,cyScreen);
     auto model = resource_loader::get_instance().get_current_model();
@@ -207,8 +210,10 @@ void MainWindow::action_change(QAction* a)
              this->hide();
              this->resize(640,480);
              int cxScreen,cyScreen;
-             cxScreen=GetSystemMetrics(SM_CXSCREEN);
-             cyScreen=GetSystemMetrics(SM_CYSCREEN);
+//             cxScreen=GetSystemMetrics(SM_CXSCREEN);
+//             cyScreen=GetSystemMetrics(SM_CYSCREEN);
+             cxScreen=QApplication::primaryScreen()->availableGeometry().width();
+             cyScreen=QApplication::primaryScreen()->availableGeometry().height();
              this->move(cxScreen/2-320,cyScreen/2 - 240);
              this->show();
              QMessageBox::critical(this, tr("QF"),QStringLiteral("资源文件错误,程序终止"));
@@ -272,8 +277,9 @@ void MainWindow::customEvent(QEvent* e)
             this->hide();
             this->resize(640,480);
             int cxScreen,cyScreen;
-            cxScreen=GetSystemMetrics(SM_CXSCREEN);
-            cyScreen=GetSystemMetrics(SM_CYSCREEN);
+//            cxScreen=GetSystemMetrics(SM_CXSCREEN);
+//            cyScreen=GetSystemMetrics(SM_CYSCREEN);
+
             this->move(cxScreen/2-320,cyScreen/2 - 240);
             this->show();
             QMessageBox::critical(this, tr("QF"),QStringLiteral("资源文件错误,程序终止"));
@@ -310,7 +316,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     pos_x = event->globalX();
     pos_y = event->globalY();
-    //QF_LOG_INFO("x:%d,y:%d",pos_x,pos_x);
+    QF_LOG_INFO("x:%d,y:%d",pos_x,pos_x);
     this->mouse_press = true;
 }
 
@@ -327,8 +333,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     {
         int x = event->globalX();
         int y = event->globalY();
-        //QF_LOG_INFO("1x:%d,y:%d",x,y);
-        //QF_LOG_INFO("2x:%d,y:%d",this->x(),this->y());
+        QF_LOG_INFO("1x:%d,y:%d",x,y);
+        QF_LOG_INFO("2x:%d,y:%d",this->x(),this->y());
         this->move(this->x()+x-pos_x, this->y()+y-pos_y);
         pos_x = x;
         pos_y = y;

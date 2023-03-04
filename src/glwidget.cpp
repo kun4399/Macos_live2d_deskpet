@@ -1,22 +1,20 @@
 ﻿#include <GL/glew.h> // glew must put first,and can not include QtOpenGL
-#include <dwmapi.h>
 #include <QtGui>
 #include <math.h>
 //#include <QtDebug>
 //#include <QtOpenGL>
-#include <Windows.h>
-#include <winuser.h>
 #include "LAppDelegate.hpp"
 #include "glwidget.h"
 #include "resource_loader.hpp"
 #include <QApplication>
+#include "QtOpenGLWidgets/QOpenGLWidget"
 namespace {
     constexpr int frame = 40;
     constexpr int fps = 1000/frame;
 }
 
 GLWidget::GLWidget(QWidget *parent)
-    : QGLWidget(parent)
+    : QOpenGLWidget(parent)
 {
     this->startTimer(fps);
 }
@@ -104,7 +102,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::timerEvent(QTimerEvent*)
 {
-    this->updateGL();
+//    this->updateGL();
+this->update();
 }
 
 void GLWidget::closeEvent(QCloseEvent * e)
