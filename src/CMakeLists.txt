@@ -1,0 +1,25 @@
+target_sources(QuietFriend
+        PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppDelegate.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppWavFileHandler.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppLive2DManager.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppModel.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppPal.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppView.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/glwidget.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/glwidget.h
+      ${CMAKE_CURRENT_SOURCE_DIR}/event_handler.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.h
+      ${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.ui
+      ${CMAKE_CURRENT_SOURCE_DIR}/message_queue.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/resource_loader.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cJSON.c
+  )
