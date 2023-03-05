@@ -10,7 +10,7 @@ target_sources(QuietFriend
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppView.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/main.mm
       ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/glwidget.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/glwidget.h

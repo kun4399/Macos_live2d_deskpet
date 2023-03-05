@@ -10,7 +10,7 @@
 #include <QtGui/QGuiApplication>
 #include "qaction.h"
 #include "qactiongroup.h"
-
+#include <QMenuBar>
 namespace  {
     int pos_x;
     int pos_y;
@@ -28,11 +28,11 @@ MainWindow::MainWindow(QWidget *parent,QApplication* mapp)
     this->mouse_press = false;
     this->setAttribute(Qt::WA_TranslucentBackground);
     this->setWindowFlag(Qt::WindowType::MSWindowsOwnDC,false);
-    this->setWindowFlag(Qt::Tool);
+//    this->setWindowFlag(Qt::Tool);
     this->setWindowFlag(Qt::WindowStaysOnTopHint);
     this->setWindowFlag(Qt::FramelessWindowHint);
 //    this->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-
+//-------------------------------------------------------------------
     //qDebug("x: %d y:%d",cxScreen,cyScreen);
     auto model = resource_loader::get_instance().get_current_model();
     if(model->x == -1 && model->y == -1)
@@ -48,10 +48,16 @@ MainWindow::MainWindow(QWidget *parent,QApplication* mapp)
     {
          this->setWindowFlag(Qt::WindowStaysOnTopHint);
     }
-
+//------------------------------------------------------------------
     m_menu=new QMenu(this);
-
     m_move=new QMenu(this);
+
+    auto menuBar = new QMenuBar(this);
+//    menuBar->setNativeMenuBar(false);
+    this->setMenuBar(menuBar);
+    menuBar->addMenu(m_menu);
+
+    m_menu->setTitle(QStringLiteral("菜单"));
     m_move->setTitle(QStringLiteral("移动"));
     g_move = new QActionGroup(m_move);
     move_on = new QAction(QStringLiteral("开"),g_move);
@@ -112,6 +118,8 @@ MainWindow::MainWindow(QWidget *parent,QApplication* mapp)
     m_menu->addMenu(m_move);
     m_menu->addSeparator();
     m_menu->addAction(a_exit);
+
+
     m_systemTray->setIcon(QIcon(resource_loader::get_instance().get_system_tray_icon_path()));
     m_systemTray->setToolTip("Qf");
     m_systemTray->show();
