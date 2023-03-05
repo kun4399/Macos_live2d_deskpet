@@ -6,7 +6,8 @@
 			"window_y":	-1
 		}],
 	"userdata":	{
-		"current_model":"Hiyori",
-		"top": true
+		"current_model":	"Hiyori",
+		"top":	true,
+		"move":	false
 	}
 }

@@ -17,6 +17,7 @@ GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
 {
     this->startTimer(fps);
+//    this->setAttribute(Qt::WA_TranslucentBackground);
 }
 
 GLWidget::~GLWidget()

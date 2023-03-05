@@ -12,12 +12,9 @@
 #include <iostream>
 #include <fstream>
 #include <GL/glew.h>
-//#include <GLFW/glfw3.h>
 #include <Model/CubismMoc.hpp>
 #include "LAppDefine.hpp"
-#include <chrono>
-#include <QtDebug>
-#include "stdio.h"
+#include <CoreFoundation/CoreFoundation.h>
 using std::endl;
 using namespace Csm;
 using namespace std;
@@ -71,9 +68,7 @@ csmFloat32  LAppPal::GetDeltaTime()
 
 void LAppPal::UpdateTime()
 {
-    s_currentFrame=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    //qDebug("LAppPal::UpdateTime():%lf",s_currentFrame);
-    //s_currentFrame = glfwGetTime();
+    s_currentFrame=CFAbsoluteTimeGetCurrent();
     s_deltaTime = s_currentFrame - s_lastFrame;
     s_lastFrame = s_currentFrame;
 }

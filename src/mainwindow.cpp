@@ -10,6 +10,7 @@
 #include <QtGui/QGuiApplication>
 #include "qaction.h"
 #include "qactiongroup.h"
+
 namespace  {
     int pos_x;
     int pos_y;
@@ -21,20 +22,17 @@ MainWindow::MainWindow(QWidget *parent,QApplication* mapp)
     , app(mapp)
 {
     assert(app != nullptr);
-    auto viewId = this->winId();
-//    DWM_BLURBEHIND bb = { 0 };
-//    HRGN hRgn = CreateRectRgn(0, 0, -1, -1); //应用毛玻璃的矩形范围，
-//    //参数(0,0,-1,-1)可以让整个窗口客户区变成透明的，而鼠标是可以捕获到透明的区域
-//    bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-//    bb.hRgnBlur = hRgn;
-//    bb.fEnable = TRUE;
-//    DwmEnableBlurBehindWindow((HWND)viewId, &bb);
     int cxScreen,cyScreen;
-//    cxScreen=GetSystemMetrics(SM_CXSCREEN);
-//    cyScreen=GetSystemMetrics(SM_CYSCREEN);
     cxScreen=QApplication::primaryScreen()->availableGeometry().width();
     cyScreen=QApplication::primaryScreen()->availableGeometry().height();
     this->mouse_press = false;
+    this->setAttribute(Qt::WA_TranslucentBackground);
+    this->setWindowFlag(Qt::WindowType::MSWindowsOwnDC,false);
+    this->setWindowFlag(Qt::Tool);
+    this->setWindowFlag(Qt::WindowStaysOnTopHint);
+    this->setWindowFlag(Qt::FramelessWindowHint);
+//    this->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+
     //qDebug("x: %d y:%d",cxScreen,cyScreen);
     auto model = resource_loader::get_instance().get_current_model();
     if(model->x == -1 && model->y == -1)
@@ -46,13 +44,11 @@ MainWindow::MainWindow(QWidget *parent,QApplication* mapp)
          this->move(model->x,model->y);
     }
 
-    this->setWindowFlag(Qt::WindowType::MSWindowsOwnDC,false);
-    this->setWindowFlag(Qt::Tool);
     if(resource_loader::get_instance().is_top())
     {
          this->setWindowFlag(Qt::WindowStaysOnTopHint);
     }
-    this->setWindowFlag(Qt::FramelessWindowHint);
+
     m_menu=new QMenu(this);
 
     m_move=new QMenu(this);

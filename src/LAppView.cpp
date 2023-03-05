@@ -116,28 +116,28 @@ void LAppView::Render()
     Live2DManager->OnUpdate();
 
     // 各モデルが持つ描画ターゲットをテクスチャとする場合
-    if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
-    {
-        const GLfloat uvVertex[] =
-        {
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-        };
-
-        for (csmUint32 i = 0; i < Live2DManager->GetModelNum(); i++)
-        {
-            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
-
-            LAppModel *model = Live2DManager->GetModel(i);
-            if (model)
-            {
-                _renderSprite->RenderImmidiate( model->GetRenderBuffer().GetColorBuffer(), uvVertex);
-            }
-        }
-    }
+//    if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
+//    {
+//        const GLfloat uvVertex[] =
+//        {
+//            1.0f, 1.0f,
+//            0.0f, 1.0f,
+//            0.0f, 0.0f,
+//            1.0f, 0.0f,
+//        };
+//
+//        for (csmUint32 i = 0; i < Live2DManager->GetModelNum(); i++)
+//        {
+//            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける
+//            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
+//
+//            LAppModel *model = Live2DManager->GetModel(i);
+//            if (model)
+//            {
+//                _renderSprite->RenderImmidiate( model->GetRenderBuffer().GetColorBuffer(), uvVertex);
+//            }
+//        }
+//    }
 }
 
 void LAppView::InitializeSprite()
@@ -289,33 +289,33 @@ void LAppView::PreModelDraw(LAppModel& refModel)
 
 void LAppView::PostModelDraw(LAppModel& refModel)
 {
-    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
-
-    if (_renderTarget != SelectTarget_None)
-    {// 別のレンダリングターゲットへ向けて描画する場合
-
-        // 使用するターゲット
-        useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
-
-        // レンダリング終了
-        useTarget->EndDraw();
-
-        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
-        if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
-        {
-            const GLfloat uvVertex[] =
-            {
-                1.0f, 1.0f,
-                0.0f, 1.0f,
-                0.0f, 0.0f,
-                1.0f, 0.0f,
-            };
-
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
-            _renderSprite->RenderImmidiate(useTarget->GetColorBuffer(), uvVertex);
-        }
-    }
+//    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
+//    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
+//
+//    if (_renderTarget != SelectTarget_None)
+//    {// 別のレンダリングターゲットへ向けて描画する場合
+//
+//        // 使用するターゲット
+//        useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
+//
+//        // レンダリング終了
+//        useTarget->EndDraw();
+//
+//        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
+//        if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
+//        {
+//            const GLfloat uvVertex[] =
+//            {
+//                1.0f, 1.0f,
+//                0.0f, 1.0f,
+//                0.0f, 0.0f,
+//                1.0f, 0.0f,
+//            };
+//
+//            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
+//            _renderSprite->RenderImmidiate(useTarget->GetColorBuffer(), uvVertex);
+//        }
+//    }
 
 }
 
