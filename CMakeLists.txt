@@ -1,5 +1,4 @@
 ﻿cmake_minimum_required(VERSION 3.5)
-
 project(QuietFriend LANGUAGES CXX C)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -32,7 +31,7 @@ set_target_properties(Live2DCubismCore
 set(GLEW_PATH /Users/gaoyukun/github/qf/third/glew)
 set(GLFW_PATH /Users/gaoyukun/github/qf/third/glfw)
 add_subdirectory(${GLEW_PATH}/build/cmake)
-#add_subdirectory(${GLFW_PATH})
+add_subdirectory(${GLFW_PATH})
 set(FRAMEWORK_SOURCE OpenGL)
 add_subdirectory(Framework)
 target_compile_definitions(Framework PUBLIC CSM_TARGET_MAC_GL)
@@ -52,7 +51,8 @@ add_executable(QuietFriend)
 add_subdirectory(src)
 
 set_target_properties(QuietFriend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-target_link_libraries(QuietFriend PRIVATE Qt6::Widgets Qt6::OpenGL glew_s Framework Qt6::OpenGLWidgets "-framework Cocoa")
+target_link_libraries(QuietFriend PRIVATE Qt6::Widgets Qt6::OpenGL glew_s Framework Qt6::OpenGLWidgets "-framework Cocoa" glfw)
+
 #set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup")
 #target_link_libraries(QuietFriend PRIVATE Qt5::Widgets Qt5::OpenGL glew_s Framework winmm.lib user32.lib dwmapi.lib
 #    debug -NODEFAULTLIB:libcmtd.lib

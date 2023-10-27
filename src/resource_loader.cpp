@@ -48,11 +48,11 @@ bool resource_loader::initialize()
     cJSON* node = cJSON_GetObjectItem(root,"systemtray");
     if(node!=NULL && cJSON_IsString(node))
     {
-        snprintf(system_tray_icon_path,resource_path_size,"Resources/%s",cJSON_GetStringValue(node));
+        snprintf(system_tray_icon_path,resource_path_size,"/Users/gaoyukun/github/qf/Resources/%s",cJSON_GetStringValue(node));
     }
     else
     {
-        snprintf(system_tray_icon_path,resource_path_size,"Resources/Qf.PNG");
+        snprintf(system_tray_icon_path,resource_path_size,"/Users/gaoyukun/github/qf/Resources/Qf.PNG");
     }
 
     node = cJSON_GetObjectItem(root,"module");

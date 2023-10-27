@@ -1,0 +1,292 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "lib/libGLEWd.dylib"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"install",
+			"set_target_properties",
+			"add_definitions",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"third/glew/build/cmake/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 107,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 170,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 108,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 59,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 98,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fPIC -fcolor-diagnostics"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 3,
+					"define" : "GLEW_BUILD"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "GLEW_NO_GLU"
+				},
+				{
+					"define" : "glew_EXPORTS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"path" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake"
+				},
+				{
+					"path" : "/Users/gaoyukun/github/qf/third/glew/build/cmake"
+				},
+				{
+					"backtrace" : 0,
+					"path" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake/glew_autogen/include"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/Users/gaoyukun/github/qf/third/glew/build/cmake/../../include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "11"
+			},
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fPIC -fcolor-diagnostics"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 3,
+					"define" : "GLEW_BUILD"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "GLEW_NO_GLU"
+				},
+				{
+					"define" : "glew_EXPORTS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"path" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake"
+				},
+				{
+					"path" : "/Users/gaoyukun/github/qf/third/glew/build/cmake"
+				},
+				{
+					"backtrace" : 0,
+					"path" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake/glew_autogen/include"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/Users/gaoyukun/github/qf/third/glew/build/cmake/../../include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				4
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"id" : "glew_autogen_timestamp_deps::@3cf116890d0f1cb6c005"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "glew_autogen::@3cf116890d0f1cb6c005"
+		}
+	],
+	"id" : "glew::@3cf116890d0f1cb6c005",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 2,
+				"path" : "lib"
+			},
+			{
+				"backtrace" : 2,
+				"path" : "lib"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "/usr/local"
+		}
+	},
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-Xlinker -framework -Xlinker OpenGL",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-Xlinker -framework -Xlinker OpenGL",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "glew",
+	"nameOnDisk" : "libGLEWd.dylib",
+	"paths" : 
+	{
+		"build" : "third/glew/build/cmake",
+		"source" : "third/glew/build/cmake"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				4
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				1,
+				2,
+				3
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				5
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				6
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/third/glew/build/cmake/glew_autogen/mocs_compilation.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "third/glew/include/GL/wglew.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "third/glew/include/GL/glew.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "third/glew/include/GL/glxew.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "third/glew/src/glew.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/third/glew/build/cmake/glew_autogen/timestamp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/third/glew/build/cmake/glew_autogen/timestamp.rule",
+			"sourceGroupIndex" : 3
+		}
+	],
+	"type" : "SHARED_LIBRARY"
+}

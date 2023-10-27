@@ -8,6 +8,7 @@
 #include "LAppDelegate.hpp"
 #include <iostream>
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include "LAppView.hpp"
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
@@ -84,6 +85,7 @@ bool LAppDelegate::Initialize(GLWidget* window)
 void LAppDelegate::Release()
 {
     // Windowの削除
+    glfwTerminate();
 
     delete _textureManager;
     delete _view;
@@ -122,6 +124,7 @@ void LAppDelegate::update()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearDepth(1.0);
+
 
     //描画更新
     _view->Render();

@@ -1,6 +1,6 @@
 ﻿#include <GL/glew.h> // glew must put first,and can not include QtOpenGL
 #include <QtGui>
-#include <math.h>
+//#include <math.h>
 //#include <QtDebug>
 //#include <QtOpenGL>
 #include "LAppDelegate.hpp"
@@ -8,6 +8,8 @@
 #include "resource_loader.hpp"
 #include <QApplication>
 #include "QtOpenGLWidgets/QOpenGLWidget"
+//#include <QOpenGLFunctions>
+//#include <iostream>
 namespace {
     constexpr int frame = 40;
     constexpr int fps = 1000/frame;
@@ -16,9 +18,10 @@ namespace {
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
 {
+//    initializeOpenGLFunctions();
     this->startTimer(fps);
-//    this->setWindowFlags(Qt::WindowStaysOnTopHint);
-//    this->setAttribute(Qt::WA_TranslucentBackground);
+    this->setCursor(QCursor(Qt::PointingHandCursor));//通过这个可以获取到鼠标在全屏幕的坐标，即使鼠标穿透也可以
+    this->x(); //获取的是窗口在其父控件（如果有的话）中的 x 坐标
 }
 
 GLWidget::~GLWidget()
@@ -34,8 +37,11 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
-   // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//    glClearColor(0,0,0,0.0);
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//    glClearDepthf(1.0);
     //qDebug("GLWidget::paintGL()");
+
     LAppDelegate::GetInstance()->update();
 }
 
@@ -59,14 +65,15 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+
     if(resource_loader::get_instance().moveable())
     {
         QApplication::sendEvent(this->parent(), event);
     }
     else
     {
-        int x = event->x();
-        int y = event->y();
+        int x = event->position().x();
+        int y = event->position().y();
         //qDebug("x:%d y:%d",x,y);
         LAppDelegate::GetInstance()->mousePressEvent(x,y);
     }
@@ -80,8 +87,8 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
     }
     else
     {
-        int x = event->x();
-        int y = event->y();
+        int x = event->position().x();
+        int y = event->position().y();
         //qDebug("x:%d y:%d",x,y);
         LAppDelegate::GetInstance()->mouseReleaseEvent(x,y);
     }
@@ -95,8 +102,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     }
     else
     {
-        int x = event->x();
-        int y = event->y();
+        int x = event->position().x();
+        int y = event->position().y();
         //qDebug("x:%d y:%d",x,y);
         LAppDelegate::GetInstance()->mouseMoveEvent(x,y);
     }
@@ -105,6 +112,9 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 void GLWidget::timerEvent(QTimerEvent*)
 {
 //    this->updateGL();
+//    int cursorX=QCursor::pos().x();
+//    int tx=this->x();
+//    std::cout << "cursorX:" << cursorX << "x:" << tx << std::endl;
 this->update();
 }
 

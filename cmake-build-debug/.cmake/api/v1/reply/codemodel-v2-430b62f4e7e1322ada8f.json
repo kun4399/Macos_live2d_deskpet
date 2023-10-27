@@ -1,0 +1,463 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						4,
+						16
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5
+					]
+				},
+				{
+					"build" : "third/glew/build/cmake",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-third.glew.build.cmake-Debug-2974f9478386c65dc7d6.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "third/glew/build/cmake",
+					"targetIndexes" : 
+					[
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						15
+					]
+				},
+				{
+					"build" : "third/glfw",
+					"childIndexes" : 
+					[
+						3
+					],
+					"jsonFile" : "directory-third.glfw-Debug-0da2865f22ac1be6beeb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "third/glfw"
+				},
+				{
+					"build" : "third/glfw/src",
+					"jsonFile" : "directory-third.glfw.src-Debug-e049ebbd9f0699cacea2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "third/glfw/src",
+					"targetIndexes" : 
+					[
+						12,
+						13,
+						14,
+						16
+					]
+				},
+				{
+					"build" : "Framework",
+					"childIndexes" : 
+					[
+						5
+					],
+					"jsonFile" : "directory-Framework-Debug-867c1ef7272a43b9aee3.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Framework",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				},
+				{
+					"build" : "Framework/src",
+					"childIndexes" : 
+					[
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						14,
+						15
+					],
+					"jsonFile" : "directory-Framework.src-Debug-431d69d7bbeb0d68c61c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 0,
+					"source" : "Framework/src"
+				},
+				{
+					"build" : "Framework/src/Effect",
+					"jsonFile" : "directory-Framework.src.Effect-Debug-af4d5560cac1387f3a39.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 0,
+					"source" : "Framework/src/Effect"
+				},
+				{
+					"build" : "Framework/src/Id",
+					"jsonFile" : "directory-Framework.src.Id-Debug-0b9aede5b7e0b1527f2a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 0,
+					"source" : "Framework/src/Id"
+				},
+				{
+					"build" : "Framework/src/Math",
+					"jsonFile" : "directory-Framework.src.Math-Debug-1db39e91cbabfce127c5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 0,
+					"source" : "Framework/src/Math"
+				},
+				{
+					"build" : "Framework/src/Model",
+					"jsonFile" : "directory-Framework.src.Model-Debug-9569cc03c90f63a1efec.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 0,
+					"source" : "Framework/src/Model"
+				},
+				{
+					"build" : "Framework/src/Motion",
+					"jsonFile" : "directory-Framework.src.Motion-Debug-011a9d85a5a39e89c655.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 0,
+					"source" : "Framework/src/Motion"
+				},
+				{
+					"build" : "Framework/src/Physics",
+					"jsonFile" : "directory-Framework.src.Physics-Debug-86219a5f9fe677357257.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 0,
+					"source" : "Framework/src/Physics"
+				},
+				{
+					"build" : "Framework/src/Rendering",
+					"childIndexes" : 
+					[
+						13
+					],
+					"jsonFile" : "directory-Framework.src.Rendering-Debug-a05fb9dde77e537778ab.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 0,
+					"source" : "Framework/src/Rendering"
+				},
+				{
+					"build" : "Framework/src/Rendering/OpenGL",
+					"jsonFile" : "directory-Framework.src.Rendering.OpenGL-Debug-65ec6da38cffecc4d5b9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 12,
+					"projectIndex" : 0,
+					"source" : "Framework/src/Rendering/OpenGL"
+				},
+				{
+					"build" : "Framework/src/Type",
+					"jsonFile" : "directory-Framework.src.Type-Debug-d79ea0b7a406107c397a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 0,
+					"source" : "Framework/src/Type"
+				},
+				{
+					"build" : "Framework/src/Utils",
+					"jsonFile" : "directory-Framework.src.Utils-Debug-0425703831831c8ad906.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 0,
+					"source" : "Framework/src/Utils"
+				},
+				{
+					"build" : "src",
+					"jsonFile" : "directory-src-Debug-b6cf2213fc5053b67c22.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src"
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16
+					],
+					"name" : "QuietFriend",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "glew",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						15
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2,
+						3
+					],
+					"name" : "GLFW",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						12,
+						13,
+						14,
+						16
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 4,
+					"id" : "Framework::@9c55c6b88f2a474f058e",
+					"jsonFile" : "target-Framework-Debug-caff3a24ef8d543b2b2b.json",
+					"name" : "Framework",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "Framework_autogen::@9c55c6b88f2a474f058e",
+					"jsonFile" : "target-Framework_autogen-Debug-357b3ec4b636202499a0.json",
+					"name" : "Framework_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "Framework_autogen_timestamp_deps::@9c55c6b88f2a474f058e",
+					"jsonFile" : "target-Framework_autogen_timestamp_deps-Debug-51e674c75e5135c5b6a5.json",
+					"name" : "Framework_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "QuietFriend::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-QuietFriend-Debug-ac241b5907fad9924d11.json",
+					"name" : "QuietFriend",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "QuietFriend_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-QuietFriend_autogen-Debug-450e076ed3f479b7d8b0.json",
+					"name" : "QuietFriend_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "QuietFriend_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-QuietFriend_autogen_timestamp_deps-Debug-346bd54aa76edcbd0d8e.json",
+					"name" : "QuietFriend_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "glew::@3cf116890d0f1cb6c005",
+					"jsonFile" : "target-glew-Debug-03956f24008916d16ba7.json",
+					"name" : "glew",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "glew_autogen::@3cf116890d0f1cb6c005",
+					"jsonFile" : "target-glew_autogen-Debug-035a26f71836ebd3e714.json",
+					"name" : "glew_autogen",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "glew_autogen_timestamp_deps::@3cf116890d0f1cb6c005",
+					"jsonFile" : "target-glew_autogen_timestamp_deps-Debug-99a0c5151fc46f2f21ba.json",
+					"name" : "glew_autogen_timestamp_deps",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "glew_s::@3cf116890d0f1cb6c005",
+					"jsonFile" : "target-glew_s-Debug-d7844ecad48254a2d6a3.json",
+					"name" : "glew_s",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "glew_s_autogen::@3cf116890d0f1cb6c005",
+					"jsonFile" : "target-glew_s_autogen-Debug-8a3fa297317689b01b38.json",
+					"name" : "glew_s_autogen",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "glew_s_autogen_timestamp_deps::@3cf116890d0f1cb6c005",
+					"jsonFile" : "target-glew_s_autogen_timestamp_deps-Debug-9997a0dec6d07ccb115d.json",
+					"name" : "glew_s_autogen_timestamp_deps",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "glfw::@d9b34ad674966aa74dba",
+					"jsonFile" : "target-glfw-Debug-2b5f3dc09e783fd8650b.json",
+					"name" : "glfw",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "glfw_autogen::@d9b34ad674966aa74dba",
+					"jsonFile" : "target-glfw_autogen-Debug-07ce3addb9e963896f52.json",
+					"name" : "glfw_autogen",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "glfw_autogen_timestamp_deps::@d9b34ad674966aa74dba",
+					"jsonFile" : "target-glfw_autogen_timestamp_deps-Debug-738fc7cb9bdba1f0e812.json",
+					"name" : "glfw_autogen_timestamp_deps",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "uninstall::@3cf116890d0f1cb6c005",
+					"jsonFile" : "target-uninstall-Debug-c4c676dbc257b5ac8ce8.json",
+					"name" : "uninstall",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "update_mappings::@d9b34ad674966aa74dba",
+					"jsonFile" : "target-update_mappings-Debug-aa2a58a2787fe55ecbd9.json",
+					"name" : "update_mappings",
+					"projectIndex" : 2
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/gaoyukun/github/qf/cmake-build-debug",
+		"source" : "/Users/gaoyukun/github/qf"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 5
+	}
+}

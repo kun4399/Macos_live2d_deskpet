@@ -1,0 +1,100 @@
+{
+	"BUILD_DIR" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake/glew_autogen",
+	"CMAKE_BINARY_DIR" : "/Users/gaoyukun/github/qf/cmake-build-debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/Users/gaoyukun/github/qf/third/glew/build/cmake",
+	"CMAKE_EXECUTABLE" : "/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake",
+	"CMAKE_LIST_FILES" : 
+	[
+		"/Users/gaoyukun/github/qf/third/glew/build/cmake/CMakeLists.txt",
+		"/Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/GNUInstallDirs.cmake",
+		"/Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindOpenGL.cmake",
+		"/Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake",
+		"/Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake",
+		"/Users/gaoyukun/github/qf/third/glew/glew.pc.in",
+		"/Users/gaoyukun/github/qf/third/glew/build/cmake/cmake_uninstall.cmake.in"
+	],
+	"CMAKE_SOURCE_DIR" : "/Users/gaoyukun/github/qf",
+	"DEP_FILE" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake/glew_autogen/deps",
+	"DEP_FILE_RULE_NAME" : "glew_autogen/timestamp",
+	"HEADERS" : 
+	[
+		[
+			"/Users/gaoyukun/github/qf/third/glew/include/GL/glew.h",
+			"MU",
+			"VHCUP2GNWG/moc_glew.cpp",
+			null
+		],
+		[
+			"/Users/gaoyukun/github/qf/third/glew/include/GL/glxew.h",
+			"MU",
+			"VHCUP2GNWG/moc_glxew.cpp",
+			null
+		],
+		[
+			"/Users/gaoyukun/github/qf/third/glew/include/GL/wglew.h",
+			"MU",
+			"VHCUP2GNWG/moc_wglew.cpp",
+			null
+		]
+	],
+	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
+	"INCLUDE_DIR" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake/glew_autogen/include",
+	"MOC_COMPILATION_FILE" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake/glew_autogen/mocs_compilation.cpp",
+	"MOC_DEFINITIONS" : [ "GLEW_BUILD", "GLEW_NO_GLU", "glew_EXPORTS" ],
+	"MOC_DEPEND_FILTERS" : 
+	[
+		[
+			"Q_PLUGIN_METADATA",
+			"[\n][ \t]*Q_PLUGIN_METADATA[ \t]*\\([^\\)]*FILE[ \t]*\"([^\"]+)\""
+		]
+	],
+	"MOC_INCLUDES" : 
+	[
+		"/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake",
+		"/Users/gaoyukun/github/qf/third/glew/build/cmake",
+		"/Users/gaoyukun/github/qf/third/glew/include",
+		"/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1",
+		"/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include",
+		"/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include",
+		"/Library/Developer/CommandLineTools/usr/include"
+	],
+	"MOC_MACRO_NAMES" : 
+	[
+		"Q_OBJECT",
+		"Q_GADGET",
+		"Q_NAMESPACE",
+		"Q_NAMESPACE_EXPORT",
+		"Q_GADGET_EXPORT"
+	],
+	"MOC_OPTIONS" : [],
+	"MOC_PATH_PREFIX" : false,
+	"MOC_PREDEFS_CMD" : 
+	[
+		"/Library/Developer/CommandLineTools/usr/bin/c++",
+		"-dM",
+		"-E",
+		"-c",
+		"/Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXCompilerABI.cpp"
+	],
+	"MOC_PREDEFS_FILE" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake/glew_autogen/moc_predefs.h",
+	"MOC_RELAXED_MODE" : false,
+	"MOC_SKIP" : [],
+	"MULTI_CONFIG" : false,
+	"PARALLEL" : 8,
+	"PARSE_CACHE_FILE" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake/CMakeFiles/glew_autogen.dir/ParseCache.txt",
+	"QT_MOC_EXECUTABLE" : "/opt/homebrew/share/qt/libexec/moc",
+	"QT_UIC_EXECUTABLE" : "/opt/homebrew/share/qt/libexec/uic",
+	"QT_VERSION_MAJOR" : 6,
+	"QT_VERSION_MINOR" : 5,
+	"SETTINGS_FILE" : "/Users/gaoyukun/github/qf/cmake-build-debug/third/glew/build/cmake/CMakeFiles/glew_autogen.dir/AutogenUsed.txt",
+	"SOURCES" : 
+	[
+		[ "/Users/gaoyukun/github/qf/third/glew/src/glew.c", "MU", null ]
+	],
+	"UIC_OPTIONS" : [],
+	"UIC_SEARCH_PATHS" : [],
+	"UIC_SKIP" : [],
+	"UIC_UI_FILES" : [],
+	"VERBOSITY" : 0
+}

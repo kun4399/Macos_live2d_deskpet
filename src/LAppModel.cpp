@@ -399,16 +399,16 @@ void LAppModel::Update()
         _expressionManager->UpdateMotion(_model, deltaTimeSeconds); // 表情でパラメータ更新（相対変化）
     }
 
-    //ドラッグによる変化
-    //ドラッグによる顔の向きの調整
+    //拖动更改
+    //通过拖动调整脸部朝向
     _model->AddParameterValue(_idParamAngleX, _dragX * 30); // -30から30の値を加える
     _model->AddParameterValue(_idParamAngleY, _dragY * 30);
     _model->AddParameterValue(_idParamAngleZ, _dragX * _dragY * -30);
 
-    //ドラッグによる体の向きの調整
+    //通过拖动调整身体方向
     _model->AddParameterValue(_idParamBodyAngleX, _dragX * 10); // -10から10の値を加える
 
-    //ドラッグによる目の向きの調整
+    //通过拖动调整眼睛方向
     _model->AddParameterValue(_idParamEyeBallX, _dragX); // -1から1の値を加える
     _model->AddParameterValue(_idParamEyeBallY, _dragY);
 

@@ -1,13 +1,17 @@
 {
 	"systemtray":	"Qf.PNG",
 	"module":	[{
+			"name":	"星野爱",
+			"window_x":	66,
+			"window_y":	214
+		}, {
 			"name":	"Hiyori",
-			"window_x":	1255,
-			"window_y":	180
+			"window_x":	-40,
+			"window_y":	552
 		}],
 	"userdata":	{
-		"current_model":	"Hiyori",
+		"current_model":	"星野爱",
 		"top":	true,
-		"move":	true
+		"move":	false
 	}
 }

@@ -1,0 +1,29 @@
+third/glfw/src/glfw_autogen/timestamp: \
+  third/glfw/src/glfw_config.h \
+  /Users/gaoyukun/github/qf/third/glfw/include/GLFW/glfw3.h \
+  /Users/gaoyukun/github/qf/third/glfw/include/GLFW/glfw3native.h \
+  /Users/gaoyukun/github/qf/third/glfw/src/CMakeLists.txt \
+  /Users/gaoyukun/github/qf/third/glfw/src/cocoa_init.m \
+  /Users/gaoyukun/github/qf/third/glfw/src/cocoa_joystick.h \
+  /Users/gaoyukun/github/qf/third/glfw/src/cocoa_joystick.m \
+  /Users/gaoyukun/github/qf/third/glfw/src/cocoa_monitor.m \
+  /Users/gaoyukun/github/qf/third/glfw/src/cocoa_platform.h \
+  /Users/gaoyukun/github/qf/third/glfw/src/cocoa_time.c \
+  /Users/gaoyukun/github/qf/third/glfw/src/cocoa_window.m \
+  /Users/gaoyukun/github/qf/third/glfw/src/context.c \
+  /Users/gaoyukun/github/qf/third/glfw/src/egl_context.c \
+  /Users/gaoyukun/github/qf/third/glfw/src/egl_context.h \
+  /Users/gaoyukun/github/qf/third/glfw/src/init.c \
+  /Users/gaoyukun/github/qf/third/glfw/src/input.c \
+  /Users/gaoyukun/github/qf/third/glfw/src/internal.h \
+  /Users/gaoyukun/github/qf/third/glfw/src/mappings.h \
+  /Users/gaoyukun/github/qf/third/glfw/src/monitor.c \
+  /Users/gaoyukun/github/qf/third/glfw/src/nsgl_context.h \
+  /Users/gaoyukun/github/qf/third/glfw/src/nsgl_context.m \
+  /Users/gaoyukun/github/qf/third/glfw/src/osmesa_context.c \
+  /Users/gaoyukun/github/qf/third/glfw/src/osmesa_context.h \
+  /Users/gaoyukun/github/qf/third/glfw/src/posix_thread.c \
+  /Users/gaoyukun/github/qf/third/glfw/src/posix_thread.h \
+  /Users/gaoyukun/github/qf/third/glfw/src/vulkan.c \
+  /Users/gaoyukun/github/qf/third/glfw/src/window.c \
+  /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake

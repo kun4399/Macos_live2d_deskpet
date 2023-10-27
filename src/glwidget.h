@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include "QtOpenGLWidgets/QOpenGLWidget"
 #include <QTimer>
-
+//#include <QOpenGLFunctions>
 class GLWidget : public QOpenGLWidget
 {
     Q_OBJECT
