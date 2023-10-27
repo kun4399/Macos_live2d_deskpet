@@ -1,0 +1,39 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+ehthumbs.db
+Thumbs.db
+
+# CLion
+.idea/
+*.iml
+.idea_modules/
+cmake-build-*/
+CMakeLists.txt.user
+
+# Build and compiled files
+build/
+bin/
+lib/
+out/
+
+# C/C++ specific
+*.suo
+*.user
+*.sdf
+*.suo
+*.ncb
+*.sln
+*.suo
+*.user
+*.pdb
+*.db
+*.idb
+*.obj
+*.o
+*.swp
+*.out
+*.app
+
