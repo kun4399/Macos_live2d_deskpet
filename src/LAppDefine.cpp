@@ -37,9 +37,9 @@ namespace LAppDefine {
     // 終了ボタン
     const csmChar* PowerImageName = "close.png";
 
-    // モデル定義------------------------------------------
-    // モデルを配置したディレクトリ名の配列
-    // ディレクトリ名とmodel3.jsonの名前を一致させておくこと
+    // 模型定义------------------------------------------
+    // モデルを配置したディレクトリ名の配列 放置了模型的目录名称的数组
+    // ディレクトリ名とmodel3.jsonの名前を一致させておくこと 请确保目录名称与model3.json文件的名称相匹配。
     //const csmChar* ModelDir[] = {
         //"Haru",
         //"mingshi",
@@ -50,11 +50,13 @@ namespace LAppDefine {
     //};
     //const csmInt32 ModelDirSize = sizeof(ModelDir) / sizeof(const csmChar*);
 
-    // 外部定義ファイル(json)と合わせる
-    const csmChar* MotionGroupIdle = "Idle"; // アイドリング
-    const csmChar* MotionGroupTapBody = "TapBody"; // 体をタップしたとき
+    // 外部定義ファイル(json)と合わせる 与外部定义文件（json）相匹配
+    const csmChar* MotionGroupIdle = "Idle"; // アイドリング 偶像化
+    const csmChar* MotionGroupTapBody = "TapBody"; // 当你轻触身体时
+    const csmChar* MotionGroupTap = "Tap";
 
-    // 外部定義ファイル(json)と合わせる
+
+    // 与外部定义文件（json）配合使用
     const csmChar* HitAreaNameHead = "Head";
     const csmChar* HitAreaNameBody = "Body";
 

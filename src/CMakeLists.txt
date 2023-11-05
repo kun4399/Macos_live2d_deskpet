@@ -22,4 +22,10 @@ target_sources(QuietFriend
       ${CMAKE_CURRENT_SOURCE_DIR}/resource_loader.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cJSON.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/AudioVolum.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/AudioVolum.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Networkutil.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Networkutil.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ChatDialog.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ChatDialog.cpp
   )

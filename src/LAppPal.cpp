@@ -15,6 +15,7 @@
 #include <Model/CubismMoc.hpp>
 #include "LAppDefine.hpp"
 #include <CoreFoundation/CoreFoundation.h>
+
 using std::endl;
 using namespace Csm;
 using namespace std;
@@ -24,26 +25,22 @@ double LAppPal::s_currentFrame = 0.0;
 double LAppPal::s_lastFrame = 0.0;
 double LAppPal::s_deltaTime = 0.0;
 
-csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
-{
+csmByte *LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt *outSize) {
     //filePath;//
-    const char* path = filePath.c_str();
+    const char *path = filePath.c_str();
 
     int size = 0;
     struct stat statBuf;
-    if (stat(path, &statBuf) == 0)
-    {
+    if (stat(path, &statBuf) == 0) {
         size = statBuf.st_size;
     }
 
     std::fstream file;
-    char* buf = new char[size];
+    char *buf = new char[size];
 
     file.open(path, std::ios::in | std::ios::binary);
-    if (!file.is_open())
-    {
-        if (DebugLogEnable)
-        {
+    if (!file.is_open()) {
+        if (DebugLogEnable) {
             PrintLog("file open error");
         }
         return NULL;
@@ -52,45 +49,40 @@ csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
     file.close();
 
     *outSize = size;
-    return reinterpret_cast<csmByte*>(buf);
+    return reinterpret_cast<csmByte *>(buf);
 }
 
-void LAppPal::ReleaseBytes(csmByte* byteData)
-{
+void LAppPal::ReleaseBytes(csmByte *byteData) {
     delete[] byteData;
 }
 
 
-csmFloat32  LAppPal::GetDeltaTime()
-{
+csmFloat32 LAppPal::GetDeltaTime() {
     return static_cast<csmFloat32>(s_deltaTime);
 }
 
-void LAppPal::UpdateTime()
-{
-    s_currentFrame=CFAbsoluteTimeGetCurrent();
+void LAppPal::UpdateTime() {
+    s_currentFrame = CFAbsoluteTimeGetCurrent();
     s_deltaTime = s_currentFrame - s_lastFrame;
     s_lastFrame = s_currentFrame;
 }
 
 
-void LAppPal::PrintLog(const csmChar* format, ...)
-{
+void LAppPal::PrintLog(const csmChar *format, ...) {
     va_list args;
     csmChar buf[256];
     va_start(args, format);
 //    vsnprintf_s(buf, sizeof(buf), format, args); // 標準出力でレンダリング
     vsnprintf(buf, sizeof(buf), format, args);
 #ifdef CSM_DEBUG_MEMORY_LEAKING
-// メモリリークチェック時は大量の標準出力がはしり重いのでprintfを利用する
-    std::printf(buf);
+    // メモリリークチェック時は大量の標準出力がはしり重いのでprintfを利用する
+        std::printf(buf);
 #else
     std::cerr << buf << std::endl;
 #endif
     va_end(args);
 }
 
-void LAppPal::PrintMessage(const csmChar* message)
-{
+void LAppPal::PrintMessage(const csmChar *message) {
     PrintLog("%s", message);
 }

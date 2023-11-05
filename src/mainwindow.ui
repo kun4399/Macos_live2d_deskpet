@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>400</height>
+    <width>403</width>
+    <height>488</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -20,6 +20,12 @@
    <bool>true</bool>
   </property>
   <widget class="GLWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="styleSheet">
     <string notr="true"/>
    </property>

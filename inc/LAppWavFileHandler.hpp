@@ -9,13 +9,12 @@
 
 #include <CubismFramework.hpp>
 #include <Utils/CubismString.hpp>
-
+#
  /**
   * @brief wavファイルハンドラ
   * @attention 16bit wav ファイル読み込みのみ実装済み
   */
-class LAppWavFileHandler
-{
+class LAppWavFileHandler {
 public:
     /**
      * @brief コンストラクタ
@@ -41,7 +40,7 @@ public:
      *
      * @param[in] filePath wavファイルのパス
      */
-    void Start(const Csm::csmString& filePath);
+    void Start(const Csm::csmString &filePath);
 
     /**
      * @brief 現在のRMS値取得
@@ -58,7 +57,7 @@ private:
      * @retval  true    読み込み成功
      * @retval  false   読み込み失敗
      */
-    Csm::csmBool LoadWavFile(const Csm::csmString& filePath);
+    Csm::csmBool LoadWavFile(const Csm::csmString &filePath);
 
     /**
      * @brief PCMデータの解放
@@ -74,14 +73,12 @@ private:
     /**
      * @brief 読み込んだwavfileの情報
      */
-    struct WavFileInfo
-    {
+    struct WavFileInfo {
         /**
          * @brief コンストラクタ
          */
         WavFileInfo() : _fileName(""), _numberOfChannels(0),
-            _bitsPerSample(0), _samplingRate(0), _samplesPerChannel(0)
-        { }
+                        _bitsPerSample(0), _samplingRate(0), _samplesPerChannel(0) {}
 
         Csm::csmString _fileName; ///< ファイル名
         Csm::csmUint32 _numberOfChannels; ///< チャンネル数
@@ -97,15 +94,13 @@ private:
         /**
          * @brief コンストラクタ
          */
-        ByteReader() : _fileByte(NULL), _fileSize(0), _readOffset(0)
-        { }
+        ByteReader() : _fileByte(NULL), _fileSize(0), _readOffset(0) {}
 
         /**
          * @brief 8ビット読み込み
          * @return Csm::csmUint8 読み取った8ビット値
          */
-        Csm::csmUint8 Get8()
-        {
+        Csm::csmUint8 Get8() {
             const Csm::csmUint8 ret = _fileByte[_readOffset];
             _readOffset++;
             return ret;
@@ -115,8 +110,7 @@ private:
          * @brief 16ビット読み込み（リトルエンディアン）
          * @return Csm::csmUint16 読み取った16ビット値
          */
-        Csm::csmUint16 Get16LittleEndian()
-        {
+        Csm::csmUint16 Get16LittleEndian() {
             const Csm::csmUint16 ret = (_fileByte[_readOffset + 1] << 8) | _fileByte[_readOffset];
             _readOffset += 2;
             return ret;
@@ -126,24 +120,22 @@ private:
          * @brief 24ビット読み込み（リトルエンディアン）
          * @return Csm::csmUint32 読み取った24ビット値（下位24ビットに設定）
          */
-        Csm::csmUint32 Get24LittleEndian()
-        {
+        Csm::csmUint32 Get24LittleEndian() {
             const Csm::csmUint32 ret =
-                (_fileByte[_readOffset + 2] << 16) | (_fileByte[_readOffset + 1] << 8)
-                | _fileByte[_readOffset];
+                    (_fileByte[_readOffset + 2] << 16) | (_fileByte[_readOffset + 1] << 8)
+                    | _fileByte[_readOffset];
             _readOffset += 3;
             return ret;
         }
 
         /**
-         * @brief 32ビット読み込み（リトルエンディアン）
-         * @return Csm::csmUint32 読み取った32ビット値
+         * @brief 32位读取（小端）
+         * @return Csm::csmUint32 读取的32位值
          */
-        Csm::csmUint32 Get32LittleEndian()
-        {
+        Csm::csmUint32 Get32LittleEndian() {
             const Csm::csmUint32 ret =
-                (_fileByte[_readOffset + 3] << 24) | (_fileByte[_readOffset + 2] << 16)
-                | (_fileByte[_readOffset + 1] << 8) | _fileByte[_readOffset];
+                    (_fileByte[_readOffset + 3] << 24) | (_fileByte[_readOffset + 2] << 16)
+                    | (_fileByte[_readOffset + 1] << 8) | _fileByte[_readOffset];
             _readOffset += 4;
             return ret;
         }
@@ -154,29 +146,27 @@ private:
          * @retval  true    一致している
          * @retval  false   一致していない
          */
-        Csm::csmBool GetCheckSignature(const Csm::csmString& reference)
-        {
-            Csm::csmChar getSignature[4] = { 0, 0, 0, 0 };
-            const Csm::csmChar* referenceString = reference.GetRawString();
-            if (reference.GetLength() != 4)
-            {
+        Csm::csmBool GetCheckSignature(const Csm::csmString &reference) {
+            Csm::csmChar getSignature[4] = {0, 0, 0, 0};
+            const Csm::csmChar *referenceString = reference.GetRawString();
+            if (reference.GetLength() != 4) {
                 return false;
             }
-            for (Csm::csmUint32 signatureOffset = 0; signatureOffset < 4; signatureOffset++)
-            {
+            for (Csm::csmUint32 signatureOffset = 0; signatureOffset < 4; signatureOffset++) {
                 getSignature[signatureOffset] = static_cast<Csm::csmChar>(Get8());
             }
             return (getSignature[0] == referenceString[0]) && (getSignature[1] == referenceString[1])
-                && (getSignature[2] == referenceString[2]) && (getSignature[3] == referenceString[3]);
+                   && (getSignature[2] == referenceString[2]) && (getSignature[3] == referenceString[3]);
         }
 
-        Csm::csmByte* _fileByte; ///< ロードしたファイルのバイト列
+        Csm::csmByte *_fileByte; ///< ロードしたファイルのバイト列
         Csm::csmSizeInt _fileSize; ///< ファイルサイズ
-        Csm::csmUint32 _readOffset; ///< ファイル参照位置
+        Csm::csmUint32 _readOffset; ///< 文件引用位置
     } _byteReader;
 
-    Csm::csmFloat32** _pcmData; ///< -1から1の範囲で表現された音声データ配列
-    Csm::csmUint32 _sampleOffset; ///< サンプル参照位置
-    Csm::csmFloat32 _lastRms; ///< 最後に計測したRMS値
-    Csm::csmFloat32 _userTimeSeconds; ///< デルタ時間の積算値[秒]
- };
+    Csm::csmFloat32 **_pcmData; ///< 表示为介于-1到1之间的音频数据数组。
+    Csm::csmUint32 _sampleOffset; ///< 参考样例位置
+    Csm::csmFloat32 _lastRms; ///< 最后测量的RMS值
+    Csm::csmFloat32 _userTimeSeconds; ///< 累积的Delta时间值[秒]
+    Csm::csmUint32 _typeID;    ///< 读取的格式ID，除了1（线性PCM），还新增支持3（IEEE浮点）。
+};

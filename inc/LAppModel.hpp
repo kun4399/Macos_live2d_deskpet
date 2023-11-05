@@ -18,7 +18,7 @@
 /**
  * @brief ユーザーが実際に使用するモデルの実装クラス<br>
  *         モデル生成、機能コンポーネント生成、更新処理とレンダリングの呼び出しを行う。
- *
+ *用户实际使用的模型实现类，执行模型生成、功能组件生成、更新处理和渲染调用。
  */
 class LAppModel : public Csm::CubismUserModel
 {
@@ -36,7 +36,7 @@ public:
 
     /**
      * @brief model3.jsonが置かれたディレクトリとファイルパスからモデルを生成する
-     *
+     * 从包含model3.json的目录和文件路径生成模型。
      */
     bool LoadAssets(const Csm::csmChar* dir, const  Csm::csmChar* fileName);
 
@@ -60,18 +60,18 @@ public:
     void Draw(Csm::CubismMatrix44& matrix);
 
     /**
-     * @brief   引数で指定したモーションの再生を開始する。
+     * @brief   引数で指定したモーションの再生を開始する。开始播放通过参数指定的动作
      *
-     * @param[in]   group                       モーショングループ名
-     * @param[in]   no                          グループ内の番号
+     * @param[in]   group                       モーショングループ名 动作组名称
+     * @param[in]   no                          グループ内の番号 小组内的编号
      * @param[in]   priority                    優先度
-     * @param[in]   onFinishedMotionHandler     モーション再生終了時に呼び出されるコールバック関数。NULLの場合、呼び出されない。
-     * @return                                  開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
+     * @param[in]   onFinishedMotionHandler     在动作播放结束时调用的回调函数。如果为NULL，则不会被调用。
+     * @return                                  返回开始的动作的识别号码。这个号码将被用作判断个别动作是否已经结束的IsFinished()函数的参数。如果无法开始，则返回"-1"。
      */
     Csm::CubismMotionQueueEntryHandle StartMotion(const Csm::csmChar* group, Csm::csmInt32 no, Csm::csmInt32 priority, Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = NULL);
 
     /**
-     * @brief   ランダムに選ばれたモーションの再生を開始する。
+     * @brief   开始播放随机选择的动作。
      *
      * @param[in]   group                       モーショングループ名
      * @param[in]   priority                    優先度
@@ -81,7 +81,7 @@ public:
     Csm::CubismMotionQueueEntryHandle StartRandomMotion(const Csm::csmChar* group, Csm::csmInt32 priority, Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = NULL);
 
     /**
-     * @brief   引数で指定した表情モーションをセットする
+     * @brief   引数で指定した表情モーションをセットする 设置由参数指定的表情动作。
      *
      * @param   expressionID    表情モーションのID
      */
@@ -89,12 +89,12 @@ public:
 
     /**
      * @brief   ランダムに選ばれた表情モーションをセットする
-     *
+     *          设置随机选择的表情动作。
      */
     void SetRandomExpression();
 
     /**
-    * @brief   イベントの発火を受け取る
+    * @brief   イベントの発火を受け取る 接收事件的触发
     *
     */
     virtual void MotionEventFired(const Live2D::Cubism::Framework::csmString& eventValue);
@@ -167,8 +167,8 @@ private:
     */
     void ReleaseExpressions();
 
-    Csm::ICubismModelSetting* _modelSetting; ///< モデルセッティング情報
-    Csm::csmString _modelHomeDir; ///< モデルセッティングが置かれたディレクトリ
+    Csm::ICubismModelSetting* _modelSetting; ///< 模型设置信息
+    Csm::csmString _modelHomeDir; ///< 模型设置所在的目录
     Csm::csmFloat32 _userTimeSeconds; ///< デルタ時間の積算値[秒]
     Csm::csmVector<Csm::CubismIdHandle> _eyeBlinkIds; ///< モデルに設定されたまばたき機能用パラメータID
     Csm::csmVector<Csm::CubismIdHandle> _lipSyncIds; ///< モデルに設定されたリップシンク機能用パラメータID

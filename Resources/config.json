@@ -1,6 +1,26 @@
 {
 	"systemtray":	"Qf.PNG",
 	"module":	[{
+			"name":	"lafei_4",
+			"window_x":	1062,
+			"window_y":	313
+		}, {
+			"name":	"paimeng",
+			"window_x":	1264,
+			"window_y":	590
+		}, {
+			"name":	"dujiaoshou_4",
+			"window_x":	1264,
+			"window_y":	590
+		}, {
+			"name":	"Haru",
+			"window_x":	812,
+			"window_y":	157
+		}, {
+			"name":	"草神",
+			"window_x":	490,
+			"window_y":	221
+		}, {
 			"name":	"星野爱",
 			"window_x":	66,
 			"window_y":	214
@@ -10,7 +30,7 @@
 			"window_y":	552
 		}],
 	"userdata":	{
-		"current_model":	"星野爱",
+		"current_model":	"Haru",
 		"top":	true,
 		"move":	false
 	}

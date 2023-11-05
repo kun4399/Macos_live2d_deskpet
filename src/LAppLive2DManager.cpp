@@ -109,22 +109,26 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
     {
-        if (_models[i]->HitTest(HitAreaNameHead, x, y))
-        {
-            if (DebugLogEnable)
-            {
-                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameHead);
-            }
-            _models[i]->SetRandomExpression();
-        }
-        else if (_models[i]->HitTest(HitAreaNameBody, x, y))
-        {
-            if (DebugLogEnable)
-            {
-                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameBody);
-            }
-            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
-        }
+    // 这里可以调用表情和动作其实关键就是调用_models[i]
+//        _models[i]->SetRandomExpression();
+        _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
+        _models[i]->StartRandomMotion(MotionGroupTap, PriorityNormal, FinishedMotion);
+//        if (_models[i]->HitTest(HitAreaNameHead, x, y))
+//        {
+//            if (DebugLogEnable)
+//            {
+//                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameHead);
+//            }
+//            _models[i]->SetRandomExpression();
+//        }
+//        else if (_models[i]->HitTest(HitAreaNameBody, x, y))
+//        {
+//            if (DebugLogEnable)
+//            {
+//                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameBody);
+//            }
+//            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
+//        }
     }
 }
 
@@ -200,7 +204,7 @@ bool LAppLive2DManager::ChangeScene(Csm::csmChar* name)
     ReleaseAllModel();
     _models.PushBack(new LAppModel());
     //_models[0]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
-     if(_models[0]->LoadAssets(modelPath, modelJsonName)==false)
+     if(!_models[0]->LoadAssets(modelPath, modelJsonName))
      {
          ReleaseAllModel();
          return false;

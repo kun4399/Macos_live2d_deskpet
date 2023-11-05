@@ -124,7 +124,7 @@ csmBool CubismUserModel::IsHit(CubismIdHandle drawableId, csmFloat32 pointX, csm
 
     if (drawIndex < 0)
     {
-        return false; // 存在しない場合はfalse
+        return false; // 如果不存在，则为false。
     }
 
     const csmInt32    count = _model->GetDrawableVertexCount(drawIndex);

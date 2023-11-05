@@ -18,14 +18,16 @@ set(BUILD_UTILS OFF CACHE BOOL "" FORCE)
 find_package(Qt6 COMPONENTS Widgets OpenGL REQUIRED)
 
 find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets)
+find_package(Qt6 COMPONENTS Multimedia REQUIRED) # 添加qt多媒体模块
+find_package(Qt6 COMPONENTS Network REQUIRED) # 添加qt网络模块
 
 add_library(Live2DCubismCore STATIC IMPORTED)
 set(CRT MT)
 set_target_properties(Live2DCubismCore
-  PROPERTIES
+        PROPERTIES
         IMPORTED_LOCATION
         /Users/gaoyukun/Downloads/CubismSdkForNative-4-r.6/Core/lib/macos/arm64/libLive2DCubismCore.a
-    INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/third/live2d/inc
+        INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/third/live2d/inc
 )
 
 set(GLEW_PATH /Users/gaoyukun/github/qf/third/glew)
@@ -38,7 +40,7 @@ target_compile_definitions(Framework PUBLIC CSM_TARGET_MAC_GL)
 target_include_directories(Framework PUBLIC ${GLEW_PATH}/include)
 target_link_libraries(Framework Live2DCubismCore glew_s)
 find_package(OpenGL REQUIRED)
-SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DQF_DEBUG")
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DQF_DEBUG") # debug模式下定义QF_DEBUG, 用来控制日志输出
 include_directories(inc)
 include_directories(src)
 include_directories(${GLEW_PATH}/include)
@@ -51,7 +53,7 @@ add_executable(QuietFriend)
 add_subdirectory(src)
 
 set_target_properties(QuietFriend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-target_link_libraries(QuietFriend PRIVATE Qt6::Widgets Qt6::OpenGL glew_s Framework Qt6::OpenGLWidgets "-framework Cocoa" glfw)
+target_link_libraries(QuietFriend PRIVATE Qt6::Widgets Qt6::OpenGL glew_s Framework Qt6::OpenGLWidgets "-framework Cocoa" glfw Qt6::Multimedia Qt6::Network )
 
 #set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup")
 #target_link_libraries(QuietFriend PRIVATE Qt5::Widgets Qt5::OpenGL glew_s Framework winmm.lib user32.lib dwmapi.lib

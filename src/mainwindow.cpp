@@ -18,19 +18,18 @@ namespace {
 }
 
 MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
-        : QMainWindow(parent), ui(new Ui::MainWindow), m_systemTray(new QSystemTrayIcon(this)), app(mapp) {
+        : QMainWindow(parent), ui(new Ui::MainWindow), m_systemTray(new QSystemTrayIcon(this)), app(mapp),
+          dialog_window_(new ChatDialog(this)) {
     assert(app != nullptr);
     int cxScreen, cyScreen;
     cxScreen = QApplication::primaryScreen()->availableGeometry().width();
     cyScreen = QApplication::primaryScreen()->availableGeometry().height();
     this->mouse_press = false;
     this->setAttribute(Qt::WA_TranslucentBackground);
-//    this->setWindowFlag(Qt::WindowStaysOnTopHint);//一旦启用这个鼠标穿透就没有效果了
+//  this->setWindowFlag(Qt::WindowStaysOnTopHint);//一旦启用这个鼠标穿透就没有效果了
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setWindowFlag(Qt::NoDropShadowWindowHint); //去掉窗口阴影，这个bug查了好久好久！！！！
-//    this->setAttribute(Qt::WA_TransparentForMouseEvents, true);//鼠标穿透
-//-------------------------------------------------------------------
-//    qDebug("x: %d y:%d",cxScreen,cyScreen);
+//  this->setAttribute(Qt::WA_TransparentForMouseEvents, true);//鼠标穿透
     auto model = resource_loader::get_instance().get_current_model();
     if (model->x == -1 && model->y == -1) {
         this->move(cxScreen - this->width() * 0.4, cyScreen - this->height() * 0.9);
@@ -81,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
             find = false;
         }
         //m_change->addAction(tmp_model);
-        model_list.push_back(std::move(tmp_model));
+        model_list.push_back(tmp_model);
     }
     g_change->setExclusive(true);
     m_change->addActions(model_list);
@@ -109,12 +108,11 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     m_systemTray->setContextMenu(m_menu);
     m_systemTray->show();
     connect(m_systemTray, &QSystemTrayIcon::activated, this, &MainWindow::activeTray);
-
     connect(set_top, &QAction::triggered, this, &MainWindow::action_set_top);
     connect(a_exit, &QAction::triggered, this, &MainWindow::action_exit);
     connect(g_move, &QActionGroup::triggered, this, &MainWindow::action_move);
     connect(g_change, &QActionGroup::triggered, this, &MainWindow::action_change);
-    event_handler::get_instance().resgist_main_window(this);
+    event_handler::get_instance().register_main_window(this);
     ui->setupUi(this);
 }
 
@@ -154,7 +152,7 @@ void MainWindow::action_change(QAction *a) {
         counter++;
     }
 
-    if (resource_loader::get_instance().update_current_model(counter) == true) {
+    if (resource_loader::get_instance().update_current_model(counter)) {
         bool load_fail = true;
         auto m = resource_loader::get_instance().get_current_model();
         if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) m->name)) {

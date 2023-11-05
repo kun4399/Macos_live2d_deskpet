@@ -61,7 +61,7 @@ public:
 
     /**
      * @brief        モデルに設定された当たり判定の数を取得する
-     *
+     *                  获取设置在模型上的碰撞检测数量。
      * @return       モデルに設定された当たり判定の数
      */
     virtual csmInt32 GetHitAreasCount() = 0;

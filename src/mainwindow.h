@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 #include <qaction.h>
+#include "ChatDialog.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -41,5 +42,6 @@ private:
     QMenu *m_change;
     QMenu *m_menu;
     QApplication* app;
+    ChatDialog* dialog_window_;
 };
 #endif // MAINWINDOW_H

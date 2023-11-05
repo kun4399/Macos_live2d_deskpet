@@ -185,7 +185,7 @@ CubismModelSettingJson::CubismModelSettingJson(const csmByte* buffer, csmSizeInt
     {
         _jsonValue.Clear();
 
-        // 順番はenum FrequentNodeと一致させる
+        // 顺序应与枚举常量FrequentNode相匹配。
         _jsonValue.PushBack(&(_json->GetRoot()[Groups]));
         _jsonValue.PushBack(&(_json->GetRoot()[FileReferences][Moc]));
         _jsonValue.PushBack(&(_json->GetRoot()[FileReferences][Motions]));

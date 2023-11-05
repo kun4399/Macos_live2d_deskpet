@@ -45,7 +45,7 @@ public:
     LAppModel* GetModel(Csm::csmUint32 no) const;
 
     /**
-    * @brief   現在のシーンで保持しているすべてのモデルを解放する
+    * @brief   現在のシーンで保持しているすべてのモデルを解放する 释放当前场景中所持有的所有模型。
     *
     */
     void ReleaseAllModel();
@@ -107,6 +107,6 @@ private:
     virtual ~LAppLive2DManager();
 
     Csm::CubismMatrix44*        _viewMatrix; ///< モデル描画に用いるView行列
-    Csm::csmVector<LAppModel*>  _models; ///< モデルインスタンスのコンテナ
+    Csm::csmVector<LAppModel*>  _models; ///< 模型实例容器
     //Csm::csmInt32               _sceneIndex; ///< 表示するシーンのインデックス値
 };

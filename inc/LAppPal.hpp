@@ -14,13 +14,13 @@
 * @brief プラットフォーム依存機能を抽象化する Cubism Platform Abstraction Layer.
 *
 * ファイル読み込みや時刻取得等のプラットフォームに依存する関数をまとめる
-*
+* 整理依赖于平台的函数，如文件读取和获取时间等。
 */
 class LAppPal
 {
 public:
     /**
-    * @brief ファイルをバイトデータとして読み込む
+    * @brief 将文件读取为字节数据
     *
     * ファイルをバイトデータとして読み込む
     *
@@ -28,11 +28,11 @@ public:
     * @param[out]  outSize     ファイルサイズ
     * @return                  バイトデータ
     */
-    static Csm::csmByte* LoadFileAsBytes(const std::string filePath, Csm::csmSizeInt* outSize);
+    static Csm::csmByte* LoadFileAsBytes(std::string filePath, Csm::csmSizeInt* outSize);
 
 
     /**
-    * @brief バイトデータを解放する
+    * @brief 释放字节数据
     *
     * バイトデータを解放する
     *

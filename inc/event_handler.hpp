@@ -32,7 +32,7 @@ public:
     bool initialize();
     void release();
     void report(event_type e,void* data);
-    void resgist_main_window(QMainWindow* mw);
+    void register_main_window(QMainWindow* mw);
 private:
     bool is_init;
     event_handler();

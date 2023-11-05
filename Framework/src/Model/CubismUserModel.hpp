@@ -142,7 +142,7 @@ public:
 
     /**
      * @brief モーションデータの読み込み
-     *
+     *读取动作数据
      * モーションデータを読み込む。
      *
      * @param[in]   buffer                      Csm::CubismMotion
@@ -155,9 +155,9 @@ public:
 
     /**
      * @brief 表情データの読み込み
-     *
+     *加载表情数据
      * 表情データを読み込む。
-     *
+     *加载表情数据。
      * @param[in]   buffer  读取exp文件的缓冲区
      * @param[in]   size    缓冲区大小
      * @param[in]   name    表情名称
@@ -186,11 +186,11 @@ public:
 
     /**
     * @brief モデルに付属するユーザーデータを読み込む
-    *
+    *读取附带在模型中的用户数据。
     * ユーザーデータを読み込む。
-    *
-    * @param[in]   buffer  userdata3.jsonが読み込まれているバッファ
-    * @param[in]   size    バッファのサイズ
+    *读取用户数据。
+    * @param[in]   buffer  userdata3.jsonが読み込まれているバッファ pose3.json正在被加载的缓冲区中。
+    * @param[in]   size    缓冲区的大小
     */
     virtual void            LoadUserData(const csmByte* buffer, csmSizeInt size);
 
@@ -267,7 +267,7 @@ protected:
     CubismMoc*              _moc;                       ///< Mocデータ
     CubismModel*            _model;                     ///< 模型实例
 
-    CubismMotionManager*    _motionManager;             ///< モーション管理
+    CubismMotionManager*    _motionManager;             ///< 动作管理
     CubismMotionManager*    _expressionManager;         ///< 表情管理
     CubismEyeBlink*         _eyeBlink;                  ///< 自動まばたき
     CubismBreath*           _breath;                    ///< 呼吸

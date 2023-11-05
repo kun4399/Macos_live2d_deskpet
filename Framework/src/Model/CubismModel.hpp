@@ -302,8 +302,8 @@ public:
      *
      * パラメータの値を加算する。
      *
-     * @param[in]   parameterId     パラメータID
-     * @param[in]   value           加算する値
+     * @param[in]   parameterId     参数ID
+     * @param[in]   value           加算的值
      * @param[in]   weight          重み
      */
     void        AddParameterValue(CubismIdHandle parameterId, csmFloat32 value, csmFloat32 weight = 1.0f);

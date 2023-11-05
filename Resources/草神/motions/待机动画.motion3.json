@@ -1,0 +1,56 @@
+{
+	"Version": 3,
+	"Meta": {
+		"Duration": 2.983,
+		"Fps": 60.0,
+		"Loop": true,
+		"AreBeziersRestricted": false,
+		"CurveCount": 2,
+		"TotalSegmentCount": 8,
+		"TotalPointCount": 10,
+		"UserDataCount": 0,
+		"TotalUserDataSize": 0
+	},
+	"Curves": [
+		{
+			"Target": "Parameter",
+			"Id": "Param25",
+			"Segments": [
+				0,
+				0,
+				0,
+				0.567,
+				8,
+				0,
+				0.9,
+				10,
+				0,
+				1.967,
+				30,
+				0,
+				2.983,
+				30
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "Param26",
+			"Segments": [
+				0,
+				0,
+				0,
+				0.867,
+				0,
+				0,
+				1.533,
+				9,
+				0,
+				2.033,
+				13,
+				0,
+				2.983,
+				30
+			]
+		}
+	]
+}
