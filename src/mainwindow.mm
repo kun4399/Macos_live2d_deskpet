@@ -11,12 +11,13 @@
 #include "qaction.h"
 #include "qactiongroup.h"
 #include <QMenuBar>
-#import "Transparent.h"
+#import "MouseEvent.h"
+#include "LAppDelegate.hpp"
 
-//namespace {
-//    int pos_x;
-//    int pos_y;
-//}
+namespace {
+    int pos_x;
+    int pos_y;
+}
 
 MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
         : QMainWindow(parent), ui(new Ui::MainWindow), m_systemTray(new QSystemTrayIcon(this)), app(mapp),
@@ -28,23 +29,12 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     cyScreen = QApplication::primaryScreen()->availableGeometry().height();
     resource_loader::get_instance().screen_width = cxScreen;
     resource_loader::get_instance().screen_height = cyScreen;
-    this->mouse_press = false;
-//    this->setAttribute(Qt::WA_TransparentForMouseEvents, true);//鼠标穿透,这个放置顺序有讲究。参考 https://zhuanlan.zhihu.com/p/648801968?utm_id=0
     this->setAttribute(Qt::WA_TranslucentBackground);
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setWindowFlag(Qt::NoDropShadowWindowHint); //去掉窗口阴影，这个bug查了好久好久！！！！
-//    auto model = resource_loader::get_instance().get_current_model();
-//    this->resize(model->model_with, model->model_height);
-//    this->setFixedSize(model->model_with, model->model_height);
     this->move(resource_loader::get_instance().current_model_x, resource_loader::get_instance().current_model_y);
     auto model = resource_loader::get_instance().get_current_model();
     this->resize(model->model_with, model->model_height);
-//    if (model->model_with == -1 && model->model_height == -1) {
-//        this->move(cxScreen - this->width() * 0.4, cyScreen - this->height() * 0.9);
-//    } else {
-//        this->move(model->model_with, model->model_height); //
-//    }
-
     if (resource_loader::get_instance().is_top()) {
         this->setWindowFlag(Qt::WindowStaysOnTopHint);
     }
@@ -91,10 +81,10 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     auto ms = resource_loader::get_instance().get_model_list();
     auto cm = resource_loader::get_instance().get_current_model();
     bool find = true;
-    for (uint32_t i = 0; i < ms.size(); i++) {
-        QAction *tmp_model = new QAction(QString(ms[i].name), g_change);
+    for (auto &m: ms) {
+        auto *tmp_model = new QAction(QString(m.name), g_change);
         tmp_model->setCheckable(true);
-        if (find && strncmp(cm->name, ms[i].name, resource_name_size) == 0) {
+        if (find && strncmp(cm->name, m.name, resource_name_size) == 0) {
             tmp_model->setChecked(true);
             find = false;
         }
@@ -133,6 +123,7 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     connect(g_change, &QActionGroup::triggered, this, &MainWindow::action_change);
     connect(g_dialog, &QActionGroup::triggered, this, &MainWindow::action_dialog);
     event_handler::get_instance().register_main_window(this);
+    MouseControl::enableMousePassThrough(this->winId(), true);
 }
 
 void MainWindow::activeTray(QSystemTrayIcon::ActivationReason r) {
@@ -149,14 +140,17 @@ void MainWindow::action_exit() {
     QF_LOG_INFO("app exit");
     resource_loader::get_instance().release();
     event_handler::get_instance().release();
-    app->exit(0);
+    QApplication::exit(0);
 }
 
 void MainWindow::action_move(QAction *a) {
     if (a == this->move_on) {
         QF_LOG_DEBUG("move on");
-        this->setWindowFlag(Qt::FramelessWindowHint, false);
+//        this->setWindowFlag(Qt::FramelessWindowHint, false);
         MouseControl::enableMousePassThrough(this->winId(), false);
+        this->m_change->setEnabled(false);
+        this->a_exit->setEnabled(false);
+        this->m_dialog->setEnabled(false);
         if (dialog_window_->isVisible()) {
             dialog_window_->setWindowFlag(Qt::FramelessWindowHint, false);
             dialog_window_->show();
@@ -165,6 +159,9 @@ void MainWindow::action_move(QAction *a) {
         QF_LOG_DEBUG("move off");
         this->setWindowFlag(Qt::FramelessWindowHint, true);
         MouseControl::enableMousePassThrough(this->winId(), true);
+        this->m_change->setEnabled(true);
+        this->a_exit->setEnabled(true);
+        this->m_dialog->setEnabled(true);
         auto &model = resource_loader::get_instance();
         if (dialog_window_->isVisible()) {
             dialog_window_->setWindowFlag(Qt::FramelessWindowHint, false);
@@ -174,8 +171,10 @@ void MainWindow::action_move(QAction *a) {
         }
         model.update_current_model_position(this->x(), this->y());
         model.update_current_model_size(this->width(), this->height());
+
     }
     this->show();
+
 }
 
 void MainWindow::action_dialog(QAction *a) {
@@ -208,7 +207,7 @@ void MainWindow::action_change(QAction *a) {
                     if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) item.name)) {
                         this->resize(item.model_with, item.model_height);
                         load_fail = false;
-                        QSystemTrayIcon::MessageIcon msgIcon = QSystemTrayIcon::MessageIcon(2);
+                        auto msgIcon = QSystemTrayIcon::MessageIcon(2);
                         this->m_systemTray->showMessage(QStringLiteral("waring"),
                                                         tr("load model fail,try load default model"), msgIcon, 5000);
                         this->model_list[_counter]->setChecked(true);
@@ -232,7 +231,7 @@ void MainWindow::action_change(QAction *a) {
             QF_LOG_INFO("app exit");
             resource_loader::get_instance().release();
             event_handler::get_instance().release();
-            this->app->exit(0);
+            QApplication::exit(0);
         }
     }
 }
@@ -245,29 +244,29 @@ void MainWindow::closeEvent(QCloseEvent *) {
     QF_LOG_INFO("app exit");
     resource_loader::get_instance().release();
     event_handler::get_instance().release();
-    this->app->exit(0);
+    QApplication::exit(0);
 }
 
 void MainWindow::customEvent(QEvent *e) {
-    QfQevent *event = (QfQevent *) e;
+    auto *event = (QfQevent *) e;
     switch (event->e) {
         case QfQevent::event_type::no_modle:
             QMessageBox::critical(this, tr("QF"), tr(event->why));
             QF_LOG_INFO("app exit");
             resource_loader::get_instance().release();
             event_handler::get_instance().release();
-            this->app->exit(0);
+            QApplication::exit(0);
             break;
         case QfQevent::event_type::load_default_model: {
             int index = resource_loader::get_instance().get_current_model_index();
-            auto model_list = resource_loader::get_instance().get_model_list();
+            auto model_List = resource_loader::get_instance().get_model_list();
             bool load_fail = true;
-            for (int i = 0; i < model_list.size(); i++) {
+            for (int i = 0; i < model_List.size(); i++) {
                 if (i != index) {
-                    if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) model_list[i].name)) {
-                        this->move(model_list[i].model_with, model_list[i].model_height);
+                    if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) model_List[i].name)) {
+                        this->move(model_List[i].model_with, model_List[i].model_height);
                         load_fail = false;
-                        QSystemTrayIcon::MessageIcon msgIcon = QSystemTrayIcon::MessageIcon(2);
+                        auto msgIcon = QSystemTrayIcon::MessageIcon(2);
                         this->m_systemTray->showMessage(QStringLiteral("waring"), tr(event->why), msgIcon, 2000);
                         this->model_list[i]->setChecked(true);
                         resource_loader::get_instance().update_current_model(i);
@@ -288,7 +287,7 @@ void MainWindow::customEvent(QEvent *e) {
                 QF_LOG_INFO("app exit");
                 resource_loader::get_instance().release();
                 event_handler::get_instance().release();
-                this->app->exit(0);
+                QApplication::exit(0);
             }
             break;
         }
@@ -311,5 +310,32 @@ void MainWindow::action_set_top() {
             dialog_window_->show();
         }
         resource_loader::get_instance().set_top(set_top->isChecked());
+    }
+}
+
+
+void MainWindow::mousePressEvent(QMouseEvent *event) {
+    Q_UNUSED(event)
+    pos_x = event->globalPosition().x();
+    pos_y = event->globalPosition().y();
+//    QF_LOG_INFO("x:%d,y:%d", pos_x, pos_x);
+    this->mouse_press = true;
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *) {
+    this->mouse_press = false;
+    this->setCursor(Qt::ArrowCursor);
+    resource_loader::get_instance().update_current_model_position(this->x(), this->y());
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event) {
+    Q_UNUSED(event)
+    if (this->mouse_press) {
+        int x = event->globalPosition().x();
+        int y = event->globalPosition().y();
+        this->move(this->x() + x - pos_x, this->y() + y - pos_y);
+        pos_x = x;
+        pos_y = y;
+        this->setCursor(Qt::SizeAllCursor);
     }
 }

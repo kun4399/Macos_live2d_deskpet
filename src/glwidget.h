@@ -9,7 +9,6 @@
 class GLWidget : public QOpenGLWidget
 {
     Q_OBJECT
-    QTimer* ter;
 public:
     explicit GLWidget(QWidget *parent = nullptr);
 
@@ -22,17 +21,19 @@ protected:
 
     void resizeGL(int width, int height) override;
     // 一旦开启鼠标穿透，这些鼠标事件就无法捕获了
-//    void mousePressEvent(QMouseEvent *event) override;
-//
-//    void mouseReleaseEvent(QMouseEvent *event) override;
-//
-//    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
+    void mouseMoveEvent(QMouseEvent *event) override;
 
     void timerEvent(QTimerEvent *event) override;
 
     void closeEvent(QCloseEvent *e) override;
-//private:
-//    ChatDialog  dialog_window_;
+
+    void enterEvent(QEnterEvent *e) override;
+
+    void leaveEvent(QEvent *e) override;
 };
 
 #endif

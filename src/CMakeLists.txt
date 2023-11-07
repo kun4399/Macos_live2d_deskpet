@@ -28,6 +28,6 @@ target_sources(QuietFriend
         ${CMAKE_CURRENT_SOURCE_DIR}/Networkutil.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ChatDialog.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ChatDialog.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Transparent.mm
-        ${CMAKE_CURRENT_SOURCE_DIR}/Transparent.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/MouseEvent.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/MouseEvent.h
   )

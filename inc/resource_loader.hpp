@@ -30,10 +30,10 @@ public:
     bool update_current_model_position(int x, int y);
     bool update_dialog_position(int x, int y);
     int  get_current_model_index() const;
-    const char* get_config_path();
+    static const char* get_config_path();
 //    bool moveable();
-    void set_moveable(bool m);
-    bool is_top();
+//    void set_moveable(bool m);
+    bool is_top() const;
     void set_top(bool top);
 public:
     int current_model_x{800};
@@ -46,7 +46,7 @@ public:
     int screen_height{0};
 private:
     bool is_init;
-    bool top;
+    bool top_;
 //    bool move;
     std::vector<model> model_list;
     char system_tray_icon_path[64];

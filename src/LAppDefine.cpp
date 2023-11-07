@@ -52,13 +52,15 @@ namespace LAppDefine {
 
     // 外部定義ファイル(json)と合わせる 与外部定义文件（json）相匹配
     const csmChar* MotionGroupIdle = "Idle"; // アイドリング 偶像化
-    const csmChar* MotionGroupTapBody = "TapBody"; // 当你轻触身体时
+//    const csmChar* MotionGroupTapBody = "TapBody"; // 当你轻触身体时
+    const csmChar* MotionGroupTapBody = "TapArea1";
     const csmChar* MotionGroupTap = "Tap";
 
 
     // 与外部定义文件（json）配合使用
     const csmChar* HitAreaNameHead = "Head";
-    const csmChar* HitAreaNameBody = "Body";
+//    const csmChar* HitAreaNameBody = "Body";
+    const csmChar* HitAreaNameBody="Area1";
 
     // モーションの優先度定数
     const csmInt32 PriorityNone = 0;

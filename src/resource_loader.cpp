@@ -1,9 +1,8 @@
 ﻿#include "cJSON.h"
 #include "qf_log.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "resource_loader.hpp"
-#include "message_queue.hpp"
 #include "event_handler.hpp"
 
 #define  CONFIG_JSON_FILE_PATH  "/Users/gaoyukun/github/qf/Resources/config.json"
@@ -12,13 +11,13 @@ namespace {
 }
 
 bool resource_loader::initialize() {
-    if (is_init == true) {
+    if (is_init) {
         QF_LOG_ERROR("initialize finished");
         return true;
     }
 
     FILE *fd = std::fopen(CONFIG_JSON_FILE_PATH, "r");
-    if (fd == NULL) {
+    if (fd == nullptr) {
         QF_LOG_ERROR("open file fail:%s", CONFIG_JSON_FILE_PATH);
         return false;
     }
@@ -35,13 +34,13 @@ bool resource_loader::initialize() {
     fclose(fd);
     buffer[file_size] = 0;
     cJSON *root = cJSON_Parse(buffer);
-    if (root == NULL) {
+    if (root == nullptr) {
         QF_LOG_ERROR("parse fail:%s", buffer);
         fclose(fd);
         return false;
     }
     cJSON *node = cJSON_GetObjectItem(root, "systemtray");
-    if (node != NULL && cJSON_IsString(node)) {
+    if (node != nullptr && cJSON_IsString(node)) {
         snprintf(system_tray_icon_path, resource_path_size, "/Users/gaoyukun/github/qf/Resources/%s",
                  cJSON_GetStringValue(node));
     } else {
@@ -49,33 +48,33 @@ bool resource_loader::initialize() {
     }
 
     node = cJSON_GetObjectItem(root, "module");
-    if (node != NULL && cJSON_IsArray(node)) {
+    if (node != nullptr && cJSON_IsArray(node)) {
         for (int i = 0; i < cJSON_GetArraySize(node); i++) {
             cJSON *model_ptr = cJSON_GetArrayItem(node, i);
             // 提取模型
-            if (model_ptr != NULL && cJSON_IsObject(model_ptr)) {
+            if (model_ptr != nullptr && cJSON_IsObject(model_ptr)) {
                 cJSON *tmp_value = cJSON_GetObjectItem(model_ptr, "name");
-                resource_loader::model tmp_model;
-                if (tmp_value != NULL && cJSON_IsString(tmp_value)) {
+                resource_loader::model tmp_model{};
+                if (tmp_value != nullptr && cJSON_IsString(tmp_value)) {
                     snprintf((char *) tmp_model.name, resource_name_size, "%s", cJSON_GetStringValue(tmp_value));
                 } else {
                     continue;
                 }
 
                 tmp_value = cJSON_GetObjectItem(model_ptr, "window_x");
-                if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+                if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
                     tmp_model.model_with = (int) cJSON_GetNumberValue(tmp_value);
                 } else {
                     continue;
                 }
 
                 tmp_value = cJSON_GetObjectItem(model_ptr, "window_y");
-                if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+                if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
                     tmp_model.model_height = (int) cJSON_GetNumberValue(tmp_value);
                 } else {
                     continue;
                 }
-                model_list.push_back(std::move(tmp_model));
+                model_list.push_back(tmp_model);
             } else {
                 continue;
             }
@@ -85,7 +84,7 @@ bool resource_loader::initialize() {
         return false;
     }
 
-    if (model_list.size() == 0) {
+    if (model_list.empty()) {
         cJSON_Delete(root);
         return false;
     }
@@ -93,22 +92,22 @@ bool resource_loader::initialize() {
     current_model_index = 0;
     current_model = &model_list[0];
     node = cJSON_GetObjectItem(root, "userdata");
-    if (node != NULL && cJSON_IsObject(node)) {
+    if (node != nullptr && cJSON_IsObject(node)) {
         cJSON *tmp_value = cJSON_GetObjectItem(node, "current_model");
-        if (tmp_value != NULL && cJSON_IsString(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsString(tmp_value)) {
             update_current_model(cJSON_GetStringValue(tmp_value));
         }
 
         tmp_value = cJSON_GetObjectItem(node, "top");
-        if (tmp_value != NULL && cJSON_IsBool(tmp_value)) {
-            top = cJSON_IsTrue(tmp_value);
+        if (tmp_value != nullptr && cJSON_IsBool(tmp_value)) {
+            top_ = cJSON_IsTrue(tmp_value);
         } else {
             cJSON_AddBoolToObject(node, "top", false);
-            top = false;
+            top_ = false;
         }
 
 //        tmp_value = cJSON_GetObjectItem(node, "move");
-//        if (tmp_value != NULL && cJSON_IsBool(tmp_value)) {
+//        if (tmp_value != nullptr && cJSON_IsBool(tmp_value)) {
 //            move = cJSON_IsTrue(tmp_value);
 //        } else {
 //            cJSON_AddBoolToObject(node, "move", false);
@@ -116,36 +115,36 @@ bool resource_loader::initialize() {
 //        }
 
         tmp_value = cJSON_GetObjectItem(node, "window_x");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             current_model_x = (int) cJSON_GetNumberValue(tmp_value);
         }
 
         tmp_value = cJSON_GetObjectItem(node, "window_y");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             current_model_y = (int) cJSON_GetNumberValue(tmp_value);
         }
 
         tmp_value = cJSON_GetObjectItem(node, "dialog_x");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             dialog_x = (int) cJSON_GetNumberValue(tmp_value);
         }
 
         tmp_value = cJSON_GetObjectItem(node, "dialog_y");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             dialog_y = (int) cJSON_GetNumberValue(tmp_value);
         }
 
         tmp_value = cJSON_GetObjectItem(node, "dialog_width");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             dialog_width = (int) cJSON_GetNumberValue(tmp_value);
         }
 
         tmp_value = cJSON_GetObjectItem(node, "dialog_height");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             dialog_height = (int) cJSON_GetNumberValue(tmp_value);
         }
     } else {
-        top = false;
+        top_ = false;
 //        move = false;
     }
 
@@ -156,7 +155,7 @@ bool resource_loader::initialize() {
 }
 
 void resource_loader::release() {
-    if (is_init == false) {
+    if (!is_init) {
         return;
     }
 
@@ -199,9 +198,9 @@ bool resource_loader::update_current_model(uint32_t index) {
         if (&model_list[index] != current_model) {
             current_model = &model_list[index];
             cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-            if (node != NULL && cJSON_IsObject(node)) {
+            if (node != nullptr && cJSON_IsObject(node)) {
                 cJSON *tmp_value = cJSON_GetObjectItem(node, "current_model");
-                if (tmp_value != NULL && cJSON_IsString(tmp_value)) {
+                if (tmp_value != nullptr && cJSON_IsString(tmp_value)) {
                     cJSON_SetValuestring(tmp_value, current_model->name);
                 } else {
                     cJSON *m = cJSON_CreateString(current_model->name);
@@ -222,15 +221,15 @@ bool resource_loader::update_current_model(uint32_t index) {
     return false;
 }
 
-bool resource_loader::is_top() {
-    return top;
+bool resource_loader::is_top() const {
+    return top_;
 }
 
 void resource_loader::set_top(bool top) {
-    if (this->top != top) {
-        this->top = top;
+    if (this->top_ != top) {
+        this->top_ = top;
         cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-        if (node != NULL && cJSON_IsObject(node)) {
+        if (node != nullptr && cJSON_IsObject(node)) {
 
             cJSON *new_item = cJSON_CreateBool(top);
             cJSON_ReplaceItemInObject(node, "top", new_item);
@@ -253,7 +252,7 @@ void resource_loader::set_top(bool top) {
 //    if (this->move != m) {
 //        this->move = m;
 //        cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-//        if (node != NULL && cJSON_IsObject(node)) {
+//        if (node != nullptr && cJSON_IsObject(node)) {
 //            cJSON *new_item = cJSON_CreateBool(this->move);
 //            cJSON_ReplaceItemInObject(node, "move", new_item);
 //        } else {
@@ -274,13 +273,13 @@ bool resource_loader::update_current_model_size(int x, int y) {
     current_model->model_height = y;
     do {
         cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "module");
-        if (node != NULL && cJSON_IsArray(node)) {
+        if (node != nullptr && cJSON_IsArray(node)) {
             int index = current_model - &model_list[0];
             QF_LOG_INFO("index:%d", index);
             cJSON *model_ptr = cJSON_GetArrayItem(node, index);
-            if (model_ptr != NULL && cJSON_IsObject(model_ptr)) {
+            if (model_ptr != nullptr && cJSON_IsObject(model_ptr)) {
                 cJSON *tmp_value = cJSON_GetObjectItem(model_ptr, "name");
-                if (tmp_value != NULL && cJSON_IsString(tmp_value)) {
+                if (tmp_value != nullptr && cJSON_IsString(tmp_value)) {
                     if (strncmp(cJSON_GetStringValue(tmp_value), (char *) current_model->name, resource_name_size) !=
                         0) {
                         QF_LOG_ERROR("%s,%s", cJSON_GetStringValue(tmp_value), (char *) current_model->name);
@@ -291,14 +290,14 @@ bool resource_loader::update_current_model_size(int x, int y) {
                 }
 
                 tmp_value = cJSON_GetObjectItem(model_ptr, "window_x");
-                if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+                if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
                     cJSON_SetNumberValue(tmp_value, x);
                 } else {
                     break;
                 }
 
                 tmp_value = cJSON_GetObjectItem(model_ptr, "window_y");
-                if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+                if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
                     cJSON_SetNumberValue(tmp_value, y);
                 } else {
                     break;
@@ -316,16 +315,16 @@ bool resource_loader::update_current_model_position(int x, int y) {
     current_model_x = x;
     current_model_y = y;
     cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-    if (node != NULL && cJSON_IsObject(node)) {
+    if (node != nullptr && cJSON_IsObject(node)) {
         cJSON *tmp_value = cJSON_GetObjectItem(node, "window_x");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             cJSON_SetNumberValue(tmp_value, x);
         } else {
             return false;
         }
 
         tmp_value = cJSON_GetObjectItem(node, "window_y");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             cJSON_SetNumberValue(tmp_value, y);
         } else {
             return false;
@@ -349,16 +348,16 @@ bool resource_loader::update_dialog_position(int x, int y) {
     dialog_x = x;
     dialog_y = y;
     cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-    if (node != NULL && cJSON_IsObject(node)) {
+    if (node != nullptr && cJSON_IsObject(node)) {
         cJSON *tmp_value = cJSON_GetObjectItem(node, "dialog_x");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             cJSON_SetNumberValue(tmp_value, x);
         } else {
             return false;
         }
 
         tmp_value = cJSON_GetObjectItem(node, "dialog_y");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             cJSON_SetNumberValue(tmp_value, y);
         } else {
             return false;
@@ -373,16 +372,16 @@ bool resource_loader::update_dialog_size(int width, int height) {
     dialog_width = width;
     dialog_height = height;
     cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-    if (node != NULL && cJSON_IsObject(node)) {
+    if (node != nullptr && cJSON_IsObject(node)) {
         cJSON *tmp_value = cJSON_GetObjectItem(node, "dialog_width");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             cJSON_SetNumberValue(tmp_value, width);
         } else {
             return false;
         }
 
         tmp_value = cJSON_GetObjectItem(node, "dialog_height");
-        if (tmp_value != NULL && cJSON_IsNumber(tmp_value)) {
+        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
             cJSON_SetNumberValue(tmp_value, height);
         } else {
             return false;

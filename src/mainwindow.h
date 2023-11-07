@@ -25,13 +25,16 @@ protected:
     void customEvent(QEvent* e) override;
 private:
     void activeTray(QSystemTrayIcon::ActivationReason r);
-    void action_exit();
+    static void action_exit();
     void action_move(QAction*);
     void action_change(QAction*);
     void action_set_top();
     void action_dialog(QAction*);
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
     Ui::MainWindow *ui;
-    bool mouse_press;
+    bool mouse_press{false};
     QSystemTrayIcon* m_systemTray;
     QAction *a_exit;
     QAction *move_off;

@@ -6,18 +6,19 @@
  */
 
 #pragma once
+
 #include "src/glwidget.h"
 #include "LAppAllocator.hpp"
 
 class LAppView;
+
 class LAppTextureManager;
 
 /**
 * @brief   アプリケーションクラス。
 *   Cubism SDK の管理を行う。
 */
-class LAppDelegate
-{
+class LAppDelegate {
 public:
     /**
     * @brief   クラスのインスタンス（シングルトン）を返す。<br>
@@ -25,7 +26,7 @@ public:
     *
     * @return  クラスのインスタンス
     */
-    static LAppDelegate* GetInstance();
+    static LAppDelegate *GetInstance();
 
     /**
     * @brief   クラスのインスタンス（シングルトン）を解放する。
@@ -36,7 +37,7 @@ public:
     /**
     * @brief   APPに必要なものを初期化する。
     */
-    bool Initialize(GLWidget* window);
+    bool Initialize(GLWidget *window);
 
     /**
     * @brief   解放する。
@@ -46,8 +47,10 @@ public:
     /**
     * @brief   実行処理。
     */
-    void resize(int width,int height);
+    void resize(int width, int height);
+
     void update();
+
 #if 0
     /**
     * @brief   OpenGL用 glfwSetMouseButtonCallback用関数。
@@ -70,7 +73,9 @@ public:
 #endif
 
     void mousePressEvent(int x, int y);
+
     void mouseReleaseEvent(int x, int y);
+
     void mouseMoveEvent(int x, int y);
 
     /**
@@ -81,12 +86,12 @@ public:
     /**
     * @brief   Window情報を取得する。
     */
-    GLWidget* GetWindow() { return _window; }
+    GLWidget *GetWindow() { return _window; }
 
     /**
     * @brief   View情報を取得する。
     */
-    LAppView* GetView() { return _view; }
+    LAppView *GetView() { return _view; }
 
     /**
     * @brief   アプリケーションを終了するかどうか。
@@ -98,7 +103,9 @@ public:
     */
     void AppEnd() { _isEnd = true; }
 
-    LAppTextureManager* GetTextureManager() { return _textureManager; }
+    LAppTextureManager *GetTextureManager() { return _textureManager; }
+
+    void SetAlpha(float alpha) { _alpha = alpha; }
 
 private:
     /**
@@ -123,14 +130,15 @@ private:
 
     LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option
-    GLWidget* _window;                         ///< OpenGL ウィンドウ
-    LAppView* _view;                             ///< View情報
+    GLWidget *_window;                         ///< OpenGL ウィンドウ
+    LAppView *_view;                             ///< View情報
     bool _captured;                              ///< クリックしているか
     float _mouseX;                               ///< マウスX座標
     float _mouseY;                               ///< マウスY座標
     bool _isEnd;                                 ///< APP終了しているか
-    LAppTextureManager* _textureManager;         ///< テクスチャマネージャー
+    LAppTextureManager *_textureManager;         ///< テクスチャマネージャー
 
     int _windowWidth;                            ///< Initialize関数で設定したウィンドウ幅
     int _windowHeight;                           ///< Initialize関数で設定したウィンドウ高さ
+    float _alpha{0};                                   /// 用来控制窗口的透明度
 };

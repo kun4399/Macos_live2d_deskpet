@@ -14,14 +14,9 @@ namespace {
 GLWidget::GLWidget(QWidget *parent)
         : QOpenGLWidget(parent) {
     this->startTimer(fps);
-//    this->setCursor(QCursor(Qt::PointingHandCursor));//通过这个可以获取到鼠标在全屏幕的坐标，即使鼠标穿透也可以
-//    this->x(); //获取的是窗口在其父控件（如果有的话）中的 x 坐标
-//dialog_window_.raise();
-//dialog_window_.show();
 }
 
-GLWidget::~GLWidget() {
-}
+GLWidget::~GLWidget() = default;
 
 void GLWidget::initializeGL() {
     LAppDelegate::GetInstance()->Initialize(this);
@@ -29,10 +24,6 @@ void GLWidget::initializeGL() {
 }
 
 void GLWidget::paintGL() {
-//    glClearColor(0,0,0,0.0);
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    glClearDepthf(1.0);
-    //qDebug("GLWidget::paintGL()");
 
     LAppDelegate::GetInstance()->update();
 }
@@ -54,44 +45,57 @@ void GLWidget::resizeGL(int width, int height) {
     LAppDelegate::GetInstance()->resize(width, height);
 }
 
-//void GLWidget::mousePressEvent(QMouseEvent *event) {
-//
-////    if (resource_loader::get_instance().moveable()) {
-////        QApplication::sendEvent(this->parent(), event);
-////    } else {
-//    int x = event->position().x(); //
+void GLWidget::mousePressEvent(QMouseEvent *event) {
+
+//    if (resource_loader::get_instance().moveable()) {
+    QApplication::sendEvent(this->parent(), event);
+//    } else {
+//    int x = event->position().x();
 //    int y = event->position().y();
+//    qDebug("GLwidget: gx:%d gy:%d", gx, gy);
 //    qDebug("GLwidget_x:%d y:%d", x, y);
 //    LAppDelegate::GetInstance()->mousePressEvent(x, y);
-////    }
-//}
-//
-//void GLWidget::mouseReleaseEvent(QMouseEvent *event) {
-////    if (resource_loader::get_instance().moveable()) {
-////        QApplication::sendEvent(this->parent(), event);
-////    } else {
-//    int x = event->position().x();
-//    int y = event->position().y();
-////    qDebug("GLwidget_x:%d y:%d", x, y);
-//    LAppDelegate::GetInstance()->mouseReleaseEvent(x, y);
-////    }
-//}
-//
-//void GLWidget::mouseMoveEvent(QMouseEvent *event) {
-////    if (resource_loader::get_instance().moveable()) {
-////        QApplication::sendEvent(this->parent(), event);
-////    } else {
-//    int x = event->position().x();
-//    int y = event->position().y();
-////    qDebug("GLwidget_x:%d y:%d", x, y);
-//    LAppDelegate::GetInstance()->mouseMoveEvent(x, y);
-////    }
-//}
+//    }
+}
 
-void GLWidget::timerEvent(QTimerEvent *) {
+void GLWidget::mouseReleaseEvent(QMouseEvent *event) {
+//    if (resource_loader::get_instance().moveable()) {
+    QApplication::sendEvent(this->parent(), event);
+//    } else {
+//    int x = event->position().x();
+//    int y = event->position().y();
+//    qDebug("GLwidget_x:%d y:%d", x, y);
+//    LAppDelegate::GetInstance()->mouseReleaseEvent(x, y);
+//    }
+}
+
+void GLWidget::mouseMoveEvent(QMouseEvent *event) {
+//    if (resource_loader::get_instance().moveable()) {
+    QApplication::sendEvent(this->parent(), event);
+//    } else {
+//    int x = event->position().x();
+//    int y = event->position().y();
+//    qDebug("GLwidget_x:%d y:%d", x, y);
+//    LAppDelegate::GetInstance()->mouseMoveEvent(x, y);
+//    }
+}
+
+void GLWidget::timerEvent(QTimerEvent *event) {
+    Q_UNUSED(event)
     this->update();
 }
 
 void GLWidget::closeEvent(QCloseEvent *e) {
+    Q_UNUSED(e)
     QApplication::sendEvent(this->parent(), e);
+}
+
+void GLWidget::enterEvent(QEnterEvent *e) {
+    Q_UNUSED(e)
+    LAppDelegate::GetInstance()->SetAlpha(0.2);
+}
+
+void GLWidget::leaveEvent(QEvent *e) {
+    Q_UNUSED(e)
+    LAppDelegate::GetInstance()->SetAlpha(0.0f);
 }

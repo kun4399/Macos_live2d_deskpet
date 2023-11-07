@@ -486,7 +486,7 @@ void LAppModel::Draw(CubismMatrix44 &matrix) {
 }
 
 csmBool LAppModel::HitTest(const csmChar *hitAreaName, csmFloat32 x, csmFloat32 y) {
-    // 透明時は当たり判定なし。
+    // 透明时没有碰撞判定。。
     if (_opacity < 1) {
         return false;
     }

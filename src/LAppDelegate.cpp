@@ -20,11 +20,11 @@ using namespace std;
 using namespace LAppDefine;
 
 namespace {
-    LAppDelegate *s_instance = NULL;
+    LAppDelegate *s_instance = nullptr;
 }
 
 LAppDelegate *LAppDelegate::GetInstance() {
-    if (s_instance == NULL) {
+    if (s_instance == nullptr) {
         s_instance = new LAppDelegate();
     }
 
@@ -32,7 +32,7 @@ LAppDelegate *LAppDelegate::GetInstance() {
 }
 
 void LAppDelegate::ReleaseInstance() {
-    if (s_instance != NULL) {
+    if (s_instance != nullptr) {
         delete s_instance;
     }
 
@@ -110,7 +110,7 @@ void LAppDelegate::update() {
     LAppPal::UpdateTime();
 
     // 画面の初期化
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, _alpha);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearDepth(1.0);
 
@@ -166,7 +166,7 @@ void LAppDelegate::Run()
 
 LAppDelegate::LAppDelegate() :
         _cubismOption(),
-        _window(NULL),
+        _window(nullptr),
         _captured(false),
         _mouseX(0.0f),
         _mouseY(0.0f),
@@ -177,9 +177,7 @@ LAppDelegate::LAppDelegate() :
     _textureManager = new LAppTextureManager();
 }
 
-LAppDelegate::~LAppDelegate() {
-
-}
+LAppDelegate::~LAppDelegate() = default;
 
 void LAppDelegate::InitializeCubism() {
     //setup cubism
@@ -248,7 +246,7 @@ void LAppDelegate::OnMouseCallBack(double x, double y)
 
 void LAppDelegate::mousePressEvent(int x, int y) {
 //    qDebug("LAppDelegate::mousePressEvent");
-    if (_view == NULL) {
+    if (_view == nullptr) {
         return;
     }
     _captured = true;
@@ -256,7 +254,7 @@ void LAppDelegate::mousePressEvent(int x, int y) {
 }
 
 void LAppDelegate::mouseReleaseEvent(int x, int y) {
-    if (_view == NULL) {
+    if (_view == nullptr) {
         return;
     }
     if (_captured) {
@@ -266,13 +264,13 @@ void LAppDelegate::mouseReleaseEvent(int x, int y) {
 }
 
 void LAppDelegate::mouseMoveEvent(int x, int y) {
-    _mouseX = static_cast<float>(x);
-    _mouseY = static_cast<float>(y);
+//    _mouseX = static_cast<float>(x);
+//    _mouseY = static_cast<float>(y);
 //    qDebug("captured:%d",_captured);
     if (!_captured) {
         return;
     }
-    if (_view == NULL) {
+    if (_view == nullptr) {
         return;
     }
     _view->OnTouchesMoved(x, y);
