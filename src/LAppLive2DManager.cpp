@@ -58,7 +58,7 @@ LAppLive2DManager::LAppLive2DManager()
 
     //ChangeScene(_sceneIndex);
      auto m = resource_loader::get_instance().get_current_model();
-     if(ChangeScene((Csm::csmChar*)m->name) == false)
+     if(!ChangeScene((Csm::csmChar *) m->name))
      {
          LAppPal::PrintLog("current module load fail");
          event_handler::get_instance().report(event_handler::event_type::app_current_modle_fail_by_initialize,NULL);

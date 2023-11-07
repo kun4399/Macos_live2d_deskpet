@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.5)
+﻿cmake_minimum_required(VERSION 3.6)
 project(QuietFriend LANGUAGES CXX C)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -55,7 +55,3 @@ add_subdirectory(src)
 set_target_properties(QuietFriend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 target_link_libraries(QuietFriend PRIVATE Qt6::Widgets Qt6::OpenGL glew_s Framework Qt6::OpenGLWidgets "-framework Cocoa" glfw Qt6::Multimedia Qt6::Network )
 
-#set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup")
-#target_link_libraries(QuietFriend PRIVATE Qt5::Widgets Qt5::OpenGL glew_s Framework winmm.lib user32.lib dwmapi.lib
-#    debug -NODEFAULTLIB:libcmtd.lib
-#    optimized -NODEFAULTLIB:libcmt.lib)

@@ -15,7 +15,7 @@ target_sources(QuietFriend
       ${CMAKE_CURRENT_SOURCE_DIR}/glwidget.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/glwidget.h
       ${CMAKE_CURRENT_SOURCE_DIR}/event_handler.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.mm
       ${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.h
       ${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.ui
       ${CMAKE_CURRENT_SOURCE_DIR}/message_queue.cpp
@@ -28,4 +28,6 @@ target_sources(QuietFriend
         ${CMAKE_CURRENT_SOURCE_DIR}/Networkutil.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ChatDialog.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ChatDialog.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Transparent.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/Transparent.h
   )

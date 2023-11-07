@@ -4,7 +4,8 @@
 #include <GL/glew.h>
 #include "QtOpenGLWidgets/QOpenGLWidget"
 #include <QTimer>
-// 这个窗口是通过编辑ui添加到mainWindow下面的
+#include "ChatDialog.h"
+// 这个窗口是ui中的“提升为”操作指定一个widget成为这个类的
 class GLWidget : public QOpenGLWidget
 {
     Q_OBJECT
@@ -20,16 +21,18 @@ protected:
     void paintGL() override;
 
     void resizeGL(int width, int height) override;
-
-    void mousePressEvent(QMouseEvent *event) override;
-
-    void mouseReleaseEvent(QMouseEvent *event) override;
-
-    void mouseMoveEvent(QMouseEvent *event) override;
+    // 一旦开启鼠标穿透，这些鼠标事件就无法捕获了
+//    void mousePressEvent(QMouseEvent *event) override;
+//
+//    void mouseReleaseEvent(QMouseEvent *event) override;
+//
+//    void mouseMoveEvent(QMouseEvent *event) override;
 
     void timerEvent(QTimerEvent *event) override;
 
     void closeEvent(QCloseEvent *e) override;
+//private:
+//    ChatDialog  dialog_window_;
 };
 
 #endif

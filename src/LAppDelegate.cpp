@@ -20,40 +20,33 @@ using namespace std;
 using namespace LAppDefine;
 
 namespace {
-    LAppDelegate* s_instance = NULL;
+    LAppDelegate *s_instance = NULL;
 }
 
-LAppDelegate* LAppDelegate::GetInstance()
-{
-    if (s_instance == NULL)
-    {
+LAppDelegate *LAppDelegate::GetInstance() {
+    if (s_instance == NULL) {
         s_instance = new LAppDelegate();
     }
 
     return s_instance;
 }
 
-void LAppDelegate::ReleaseInstance()
-{
-    if (s_instance != NULL)
-    {
+void LAppDelegate::ReleaseInstance() {
+    if (s_instance != NULL) {
         delete s_instance;
     }
 
     s_instance = NULL;
 }
 
-bool LAppDelegate::Initialize(GLWidget* window)
-{
-    if (DebugLogEnable)
-    {
+bool LAppDelegate::Initialize(GLWidget *window) {
+    if (DebugLogEnable) {
         LAppPal::PrintLog("START");
     }
 
 
     if (glewInit() != GLEW_OK) {
-        if (DebugLogEnable)
-        {
+        if (DebugLogEnable) {
             LAppPal::PrintLog("Can't initilize glew.");
         }
         return GL_FALSE;
@@ -82,8 +75,7 @@ bool LAppDelegate::Initialize(GLWidget* window)
     return GL_TRUE;
 }
 
-void LAppDelegate::Release()
-{
+void LAppDelegate::Release() {
     // Windowの削除
     glfwTerminate();
 
@@ -98,10 +90,8 @@ void LAppDelegate::Release()
 }
 
 
-void LAppDelegate::resize(int width,int height)
-{
-    if( (_windowWidth!=width || _windowHeight!=height) && width>0 && height>0)
-    {
+void LAppDelegate::resize(int width, int height) {
+    if ((_windowWidth != width || _windowHeight != height) && width > 0 && height > 0) {
         //AppViewの初期化
         _view->Initialize();
         // スプライトサイズを再設定
@@ -115,8 +105,7 @@ void LAppDelegate::resize(int width,int height)
     }
 }
 
-void LAppDelegate::update()
-{
+void LAppDelegate::update() {
     // 時間更新
     LAppPal::UpdateTime();
 
@@ -175,27 +164,24 @@ void LAppDelegate::Run()
 }
 #endif
 
-LAppDelegate::LAppDelegate():
-    _cubismOption(),
-    _window(NULL),
-    _captured(false),
-    _mouseX(0.0f),
-    _mouseY(0.0f),
-    _isEnd(false),
-    _windowWidth(0),
-    _windowHeight(0)
-{
+LAppDelegate::LAppDelegate() :
+        _cubismOption(),
+        _window(NULL),
+        _captured(false),
+        _mouseX(0.0f),
+        _mouseY(0.0f),
+        _isEnd(false),
+        _windowWidth(0),
+        _windowHeight(0) {
     _view = new LAppView();
     _textureManager = new LAppTextureManager();
 }
 
-LAppDelegate::~LAppDelegate()
-{
+LAppDelegate::~LAppDelegate() {
 
 }
 
-void LAppDelegate::InitializeCubism()
-{
+void LAppDelegate::InitializeCubism() {
     //setup cubism
     _cubismOption.LogFunction = LAppPal::PrintMessage;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
@@ -259,79 +245,70 @@ void LAppDelegate::OnMouseCallBack(double x, double y)
     _view->OnTouchesMoved(_mouseX, _mouseY);
 }
 #endif
-void LAppDelegate::mousePressEvent(int x, int y)
-{
-    if (_view == NULL)
-    {
+
+void LAppDelegate::mousePressEvent(int x, int y) {
+//    qDebug("LAppDelegate::mousePressEvent");
+    if (_view == NULL) {
         return;
     }
     _captured = true;
     _view->OnTouchesBegan((float)x, (float)y);
 }
-void LAppDelegate::mouseReleaseEvent(int x, int y)
-{
-    if (_view == NULL)
-    {
+
+void LAppDelegate::mouseReleaseEvent(int x, int y) {
+    if (_view == NULL) {
         return;
     }
-
-    if (_captured)
-    {
+    if (_captured) {
         _captured = false;
-        _view->OnTouchesEnded((float)x,(float)y);
+        _view->OnTouchesEnded((float) x, (float) y);
     }
 }
 
-void LAppDelegate::mouseMoveEvent(int x, int y)
-{
+void LAppDelegate::mouseMoveEvent(int x, int y) {
     _mouseX = static_cast<float>(x);
     _mouseY = static_cast<float>(y);
-
-    if (!_captured)
-    {
+//    qDebug("captured:%d",_captured);
+    if (!_captured) {
         return;
     }
-    if (_view == NULL)
-    {
+    if (_view == NULL) {
         return;
     }
     _view->OnTouchesMoved(x, y);
 }
 
-GLuint LAppDelegate::CreateShader()
-{
+GLuint LAppDelegate::CreateShader() {
     //バーテックスシェーダのコンパイル
     GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-    const char* vertexShader =
-        "#version 120\n"
-        "attribute vec3 position;"
-        "attribute vec2 uv;"
-        "varying vec2 vuv;"
-        "void main(void){"
-        "    gl_Position = vec4(position, 1.0);"
-        "    vuv = uv;"
-        "}";
+    const char *vertexShader =
+            "#version 120\n"
+            "attribute vec3 position;"
+            "attribute vec2 uv;"
+            "varying vec2 vuv;"
+            "void main(void){"
+            "    gl_Position = vec4(position, 1.0);"
+            "    vuv = uv;"
+            "}";
     glShaderSource(vertexShaderId, 1, &vertexShader, NULL);
     glCompileShader(vertexShaderId);
-    if(!CheckShader(vertexShaderId))
-    {
+    if (!CheckShader(vertexShaderId)) {
         return 0;
     }
 
     //フラグメントシェーダのコンパイル
     GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    const char* fragmentShader =
-        "#version 120\n"
-        "varying vec2 vuv;"
-        "uniform sampler2D texture;"
-        "uniform vec4 baseColor;"
-        "void main(void){"
-        "    gl_FragColor = texture2D(texture, vuv) * baseColor;"
-        "}";
+    const char *fragmentShader =
+            "#version 120\n"
+            "varying vec2 vuv;"
+            "uniform sampler2D texture;"
+            "uniform vec4 baseColor;"
+            "void main(void){"
+            "    gl_FragColor = texture2D(texture, vuv) * baseColor;"
+            "}";
     glShaderSource(fragmentShaderId, 1, &fragmentShader, NULL);
     glCompileShader(fragmentShaderId);
-    if (!CheckShader(fragmentShaderId))
-    {
+    if (!CheckShader(fragmentShaderId)) {
         return 0;
     }
 
@@ -348,22 +325,19 @@ GLuint LAppDelegate::CreateShader()
     return programId;
 }
 
-bool LAppDelegate::CheckShader(GLuint shaderId)
-{
+bool LAppDelegate::CheckShader(GLuint shaderId) {
     GLint status;
     GLint logLength;
     glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0)
-    {
-        GLchar* log = reinterpret_cast<GLchar*>(CSM_MALLOC(logLength));
+    if (logLength > 0) {
+        GLchar *log = reinterpret_cast<GLchar *>(CSM_MALLOC(logLength));
         glGetShaderInfoLog(shaderId, logLength, &logLength, log);
         CubismLogError("Shader compile log: %s", log);
         CSM_FREE(log);
     }
 
     glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
-    if (status == GL_FALSE)
-    {
+    if (status == GL_FALSE) {
         glDeleteShader(shaderId);
         return false;
     }

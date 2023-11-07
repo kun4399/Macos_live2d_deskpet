@@ -348,10 +348,11 @@ void LAppModel::Update() {
     if (_expressionManager != NULL) {
         _expressionManager->UpdateMotion(_model, deltaTimeSeconds); // 根据表情更新参数（相对变化）。
     }
-
+//    LAppPal::PrintLog("_dragX: %f", _dragX);
+//    LAppPal::PrintLog("_dragY: %f", _dragY);
     //拖动更改
     //通过拖动调整脸部朝向
-    _model->AddParameterValue(_idParamAngleX, _dragX * 30); // -30から30の値を加える
+    _model->AddParameterValue(_idParamAngleX, _dragX * 30); // 加上-30到30的值。
     _model->AddParameterValue(_idParamAngleY, _dragY * 30);
     _model->AddParameterValue(_idParamAngleZ, _dragX * _dragY * -30);
 

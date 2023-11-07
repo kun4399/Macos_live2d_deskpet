@@ -4,6 +4,7 @@
 
 #ifndef QUIETFRIEND_CHATDIALOG_H
 #define QUIETFRIEND_CHATDIALOG_H
+
 #include <QCoreApplication>
 #include <QDialog>
 #include <QFormLayout>
@@ -14,71 +15,44 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QObject>
+#include <QScrollArea>
+#include "resource_loader.hpp"
 
-class ChatDialog : public QDialog
-{
+class ChatDialog : public QDialog {
 Q_OBJECT
 
 public:
-    ChatDialog(QWidget *parent = nullptr) : QDialog(parent)
-    {
-        setWindowTitle("Chat Dialog");
+    explicit ChatDialog(QWidget *parent = nullptr);
 
-        // 创建布局
-        QFormLayout *layout = new QFormLayout(this);
-        inputLine = new QLineEdit(this);
-        sendButton = new QPushButton("Send", this);
-        chatText = new QTextEdit(this);
-        chatText->setReadOnly(true);
+    ~ChatDialog() override;
 
-        layout->addRow("Enter your message:", inputLine);
-        layout->addRow(chatText);
-        layout->addRow(sendButton);
-
-        // 创建网络请求管理器
-        networkManager = new QNetworkAccessManager(this);
-
-        // 连接按钮点击事件到发送消息槽函数
-        connect(sendButton, &QPushButton::clicked, this, &ChatDialog::sendMessage);
-
-        // 连接网络响应到处理响应槽函数
-        connect(networkManager, &QNetworkAccessManager::finished, this, &ChatDialog::handleResponse);
-    }
+protected:
+//    void focusOutEvent(QFocusEvent *event) override {
+//        QDialog::focusOutEvent(event); // 调用基类的事件处理
+//
+//        // 当窗口失去焦点时，关闭窗口。这个一直实现不了
+//        if (textEdit->hasFocus() || inputLine->hasFocus() || sendButton->hasFocus()) {
+//            return;
+//        } else {
+//            close();
+//        }
+//    }
+//    void mousePressEvent(QMouseEvent *event) override ;
+//
+//    void mouseMoveEvent(QMouseEvent *event) override ;
+//
+//    void mouseReleaseEvent(QMouseEvent *event) override ;
 
 private slots:
-    void sendMessage()
-    {
-        QString message = inputLine->text();
-        if (message.isEmpty())
-            return;
 
-        // 清空输入框
-        inputLine->clear();
-
-        // 发送消息到服务器
-        QUrl url("https://example.com"); // 替换为你的服务器地址
-        QNetworkRequest request(url);
-        QByteArray requestData = message.toUtf8();
-
-        QNetworkReply *reply = networkManager->post(request, requestData);
-    }
-
-    void handleResponse(QNetworkReply *reply)
-    {
-        if (reply->error() == QNetworkReply::NoError) {
-            QByteArray data = reply->readAll();
-            chatText->append("Server response: " + data);
-        } else {
-            chatText->append("Network request error: " + reply->errorString());
-        }
-        reply->deleteLater();
-    }
+    void sendMessage();
 
 private:
     QLineEdit *inputLine;
     QPushButton *sendButton;
-    QTextEdit *chatText;
+    QTextEdit *textEdit;
     QNetworkAccessManager *networkManager;
+    bool mouse_press; // 鼠标按下
 };
 
 

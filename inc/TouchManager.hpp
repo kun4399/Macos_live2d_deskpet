@@ -97,7 +97,7 @@ private:
     float _lastTouchDistance;   // 2本以上でタッチしたときの指の距離
     float _deltaX;              // 前回の値から今回の値へのxの移動距離。
     float _deltaY;              // 前回の値から今回の値へのyの移動距離。
-    float _scale;               // このフレームで掛け合わせる拡大率。拡大操作中以外は1。
+    float _scale;               // 这个框架用于放大倍率。在放大操作之外，倍率为1。
     bool _touchSingle;          // シングルタッチ時はtrue
     bool _flipAvailable;        // フリップが有効かどうか
 

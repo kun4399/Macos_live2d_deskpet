@@ -16,11 +16,12 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr,QApplication* mapp = nullptr);
     ~MainWindow();
+    static MainWindow* get_instance();
 protected:
     void closeEvent(QCloseEvent * e) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
+//    void mousePressEvent(QMouseEvent *event) override;
+//    void mouseReleaseEvent(QMouseEvent *event) override;
+//    void mouseMoveEvent(QMouseEvent *event) override;
     void customEvent(QEvent* e) override;
 private:
     void activeTray(QSystemTrayIcon::ActivationReason r);
@@ -28,6 +29,7 @@ private:
     void action_move(QAction*);
     void action_change(QAction*);
     void action_set_top();
+    void action_dialog(QAction*);
     Ui::MainWindow *ui;
     bool mouse_press;
     QSystemTrayIcon* m_systemTray;
@@ -35,7 +37,11 @@ private:
     QAction *move_off;
     QAction *move_on;
     QAction *set_top;
+    QAction * close_dialog;
+    QAction * open_dialog;
+    QMenu * m_dialog;
     QActionGroup *g_move;
+    QActionGroup *g_dialog;
     QMenu *m_move;
     QList<QAction*> model_list;
     QActionGroup *g_change;
@@ -43,5 +49,6 @@ private:
     QMenu *m_menu;
     QApplication* app;
     ChatDialog* dialog_window_;
+    static MainWindow* instance;
 };
 #endif // MAINWINDOW_H

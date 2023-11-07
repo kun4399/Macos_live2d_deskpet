@@ -196,7 +196,7 @@ void LAppView::OnTouchesMoved(float px, float py) const
 {
     float viewX = this->TransformViewX(_touchManager->GetX());
     float viewY = this->TransformViewY(_touchManager->GetY());
-
+//    qDebug("viewX:%f viewY:%f", viewX, viewY);
     _touchManager->TouchesMoved(px, py);
 
     LAppLive2DManager* Live2DManager = LAppLive2DManager::GetInstance();
@@ -210,7 +210,7 @@ void LAppView::OnTouchesEnded(float , float ) const
     live2DManager->OnDrag(0.0f, 0.0f);
     {
 
-        // シングルタップ
+        // 触摸结束
         float x = _deviceToScreen->TransformX(_touchManager->GetX()); // 論理座標変換した座標を取得。
         float y = _deviceToScreen->TransformY(_touchManager->GetY()); // 論理座標変換した座標を取得。
         if (DebugTouchLogEnable)

@@ -29,10 +29,10 @@ CubismTargetPoint::~CubismTargetPoint()
 
 void CubismTargetPoint::Update(csmFloat32 deltaTimeSeconds)
 {
-    // デルタ時間を加算する
+    // 添加增量时间
     _userTimeSeconds += deltaTimeSeconds;
 
-    // 首を中央から左右に振るときの平均的な早さは  秒程度。加速・減速を考慮して、その2倍を最高速度とする
+    // 当将头部从中间向左右摇动时，平均速度约为每秒钟。考虑到加速和减速，将最大速度设定为该速度的两倍。
     // 顔のふり具合を、中央(0.0)から、左右は(+-1.0)とする
     const csmFloat32 FaceParamMaxV = 40.0 / 10.0f;                                      // 7.5秒間に40分移動（5.3/sc)
     const csmFloat32 MaxV = FaceParamMaxV * 1.0f / static_cast<csmFloat32>(FrameRate);  // 1frameあたりに変化できる速度の上限
