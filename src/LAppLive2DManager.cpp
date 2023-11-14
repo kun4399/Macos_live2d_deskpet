@@ -58,10 +58,11 @@ LAppLive2DManager::LAppLive2DManager()
 
     //ChangeScene(_sceneIndex);
      auto m = resource_loader::get_instance().get_current_model();
-     if(!ChangeScene((Csm::csmChar *) m->name))
+     QByteArray model_name= m->name.toUtf8();
+     if(!ChangeScene((Csm::csmChar *) model_name.data()))
      {
          LAppPal::PrintLog("current module load fail");
-         event_handler::get_instance().report(event_handler::event_type::app_current_modle_fail_by_initialize,NULL);
+         event_handler::get_instance().report<QString>(msg_queue::message_type::app_current_model_load_fail, nullptr);
      }
 }
 
@@ -106,30 +107,37 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
     {
         LAppPal::PrintLog("[APP]tap point: {x:%.2f y:%.2f}", x, y);
     }
-
-    for (csmUint32 i = 0; i < _models.GetSize(); i++)
+    if (_models.GetSize() != 1)
     {
-    // 这里可以调用表情和动作其实关键就是调用_models[i]
-//        _models[i]->SetRandomExpression();
-//        _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
-//        _models[i]->StartRandomMotion(MotionGroupTap, PriorityNormal, FinishedMotion);
-        if (_models[i]->HitTest(HitAreaNameHead, x, y))
-        {
-            if (DebugLogEnable)
-            {
-                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameHead);
-            }
-            _models[i]->SetRandomExpression();
-        }
-        else if (_models[i]->HitTest(HitAreaNameBody, x, y))
-        {
-            if (DebugLogEnable)
-            {
-                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameBody);
-            }
-            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
-        }
+        LAppPal::PrintLog("[Error] model size is %d", _models.GetSize());
+        return;
     }
+    Csm::csmInt32 hit_area = _models[0]->HitTest(x, y);
+    if (hit_area == -1)
+    {
+        return;
+    }
+    _models[0]->StartRandomMotionOrExpression(hit_area, FinishedMotion);
+//    for (csmUint32 i = 0; i < _models.GetSize(); i++)
+//    {
+    // 这里可以调用表情和动作其实关键就是调用_models[i]
+//        if (_models[i]->HitTest(HitAreaNameHead, x, y))
+//        {
+//            if (DebugLogEnable)
+//            {
+//                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameHead);
+//            }
+//            _models[i]->SetRandomExpression();
+//        }
+//        else if (_models[i]->HitTest(HitAreaNameBody, x, y))
+//        {
+//            if (DebugLogEnable)
+//            {
+//                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameBody);
+//            }
+//            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
+//        }
+//    }
 }
 
 void LAppLive2DManager::OnUpdate() const
@@ -186,20 +194,10 @@ bool LAppLive2DManager::ChangeScene(Csm::csmChar* name)
     {
         LAppPal::PrintLog("[APP]model index: %s", name);
     }
-    //LAppPal::PrintLog("[APP]model index: %s", name);
-    // ModelDir[]に保持したディレクトリ名から
-    // model3.jsonのパスを決定する.
-    // ディレクトリ名とmodel3.jsonの名前を一致させておくこと.
-    //std::string model = ModelDir[index];
-    //std::string modelPath = ResourcesPath + model + "/";
-    //std::string modelJsonName = ModelDir[index];
     char modelPath[128];
     char modelJsonName[128];
     snprintf(modelPath,128,"%s%s/",ResourcesPath,(char*)name);
     snprintf(modelJsonName,128,"%s.model3.json", (char*)name);
-
-    //std::string modelJsonName = ModelDir[index];
-    //modelJsonName += ".model3.json";
 
     ReleaseAllModel();
     _models.PushBack(new LAppModel());
@@ -252,5 +250,22 @@ void LAppLive2DManager::SetViewMatrix(CubismMatrix44* m)
 {
     for (int i = 0; i < 16; i++) {
         _viewMatrix->GetArray()[i] = m->GetArray()[i];
+    }
+}
+
+void LAppLive2DManager::RobotControl(Csm::csmChar *motion_group, Csm::csmChar *expression, const std::shared_ptr<QByteArray>& sound) {
+    if (DebugLogEnable) {
+        qDebug() << "RobotControl: " << motion_group << " " << expression;
+    }
+    if (_models.GetSize() != 1) {
+        LAppPal::PrintLog("[Error] model size is %d", _models.GetSize());
+        return;
+    }
+    if (expression != nullptr && _models[0]->ExpressionExists(expression)) {
+        _models[0]->SetExpression(expression);
+    }
+    if (motion_group != nullptr && _models[0]->MotionGroupExists(motion_group)) {
+        qDebug() << "RobotControl: " << motion_group << "start";
+        _models[0]->StartMotion(motion_group, 0, PriorityForce, FinishedMotion, sound);
     }
 }

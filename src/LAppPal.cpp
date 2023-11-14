@@ -7,7 +7,7 @@
 
 #include "LAppPal.hpp"
 #include <cstdio>
-#include <stdarg.h>
+#include <cstdarg>
 #include <sys/stat.h>
 #include <iostream>
 #include <fstream>

@@ -11,13 +11,15 @@
 #include "LAppPal.hpp"
 
 LAppWavFileHandler::LAppWavFileHandler()
-        : _pcmData(NULL), _userTimeSeconds(0.0f), _lastRms(0.0f), _sampleOffset(0) {
+        : _pcmData(nullptr), _userTimeSeconds(0.0f), _lastRms(0.0f), _sampleOffset(0) {
+    _audioPlayer = new AudioPlayer();
 }
 
 LAppWavFileHandler::~LAppWavFileHandler() {
-    if (_pcmData != NULL) {
+    if (_pcmData != nullptr) {
         ReleasePcmData();
     }
+    delete _audioPlayer;
 }
 
 Csm::csmBool LAppWavFileHandler::Update(Csm::csmFloat32 deltaTimeSeconds) {
@@ -25,7 +27,7 @@ Csm::csmBool LAppWavFileHandler::Update(Csm::csmFloat32 deltaTimeSeconds) {
     Csm::csmFloat32 rms;
 
     // 如果在数据加载之前或者到达文件末尾时，不进行更新。
-    if ((_pcmData == NULL)
+    if ((_pcmData == nullptr)
         || (_sampleOffset >= _wavFileInfo._samplesPerChannel)) {
         _lastRms = 0.0f;
         return false;
@@ -61,37 +63,42 @@ void LAppWavFileHandler::Start(const Csm::csmString &filePath) {
 //        return;
 //    }
     LoadWavFile(filePath);
-//调用系统播放音频
-    std::string stdfilePath(filePath.GetRawString());
-    std::string command = "afplay \"" + stdfilePath + "\" &";
-    system(command.c_str());
-
     // 初始化样例参照位置
     _sampleOffset = 0;
     _userTimeSeconds = 0.0f;
 
     // RMS値をリセット
     _lastRms = 0.0f;
+
+    //调用系统播放音频
+    std::string stdfilePath(filePath.GetRawString());
+    std::string command = "afplay \"" + stdfilePath + "\" &";
+    system(command.c_str());
 }
 
 Csm::csmFloat32 LAppWavFileHandler::GetRms() const {
     return _lastRms;
 }
 
-Csm::csmBool LAppWavFileHandler::LoadWavFile(const Csm::csmString &filePath) {
+Csm::csmBool LAppWavFileHandler::LoadWavFile(const Csm::csmString &filePath, std::shared_ptr<QByteArray> sound) {
     Csm::csmBool ret;
 
     // 如果已经加载了wav文件，则释放区域。
-    if (_pcmData != NULL) {
+    if (_pcmData != nullptr) {
         ReleasePcmData();
     }
 
     // 加载文件
-    _byteReader._fileByte = LAppPal::LoadFileAsBytes(filePath.GetRawString(), &(_byteReader._fileSize));
+    if (sound != nullptr) {
+        _byteReader._fileSize = sound->size();
+        _byteReader._fileByte = reinterpret_cast<Csm::csmByte *>(sound->data());
+    } else {
+        _byteReader._fileByte = LAppPal::LoadFileAsBytes(filePath.GetRawString(), &(_byteReader._fileSize));
+    }
     _byteReader._readOffset = 0;
 
     // 如果文件加载失败或者没有给定以"RIFF"开头的大小，则失败。
-    if ((_byteReader._fileByte == NULL) || (_byteReader._fileSize < 4)) {
+    if ((_byteReader._fileByte == nullptr) || (_byteReader._fileSize < 4)) {
         return false;
     }
 
@@ -149,6 +156,7 @@ Csm::csmBool LAppWavFileHandler::LoadWavFile(const Csm::csmString &filePath) {
             ret = false;
             break;
         }
+        _wavFileInfo._dataOffset = _byteReader._readOffset;
         // 样本数量
         {
             const Csm::csmUint32 dataChunkSize = _byteReader.Get32LittleEndian();
@@ -174,7 +182,9 @@ Csm::csmBool LAppWavFileHandler::LoadWavFile(const Csm::csmString &filePath) {
     } while (false);
 
     // 文件开放
-    LAppPal::ReleaseBytes(_byteReader._fileByte);
+    if (sound == nullptr) {
+        LAppPal::ReleaseBytes(_byteReader._fileByte);
+    }
     _byteReader._fileByte = nullptr;
     _byteReader._fileSize = 0;
 
@@ -216,5 +226,31 @@ void LAppWavFileHandler::ReleasePcmData() {
         CSM_FREE(_pcmData[channelCount]);
     }
     CSM_FREE(_pcmData);
-    _pcmData = NULL;
+    _pcmData = nullptr;
+}
+
+void LAppWavFileHandler::Start(std::shared_ptr<QByteArray> &sound) {
+    if (!LoadWavFile("", sound)) {
+        qDebug() << "LappWavFileHandler::Start:LoadWavFile failed";
+        return;
+    }
+    sound->remove(0,_wavFileInfo._dataOffset);
+    if(_typeID ==1)
+    {
+        switch (_wavFileInfo._bitsPerSample) {
+            case 8:
+                _audioPlayer->PlayAudio(*sound,_wavFileInfo._samplingRate,_wavFileInfo._numberOfChannels,QAudioFormat::SampleFormat::UInt8);
+                break;
+            case 16:
+                _audioPlayer->PlayAudio(*sound,_wavFileInfo._samplingRate,_wavFileInfo._numberOfChannels,QAudioFormat::SampleFormat::Int16);
+                break;
+            case 32:
+                _audioPlayer->PlayAudio(*sound,_wavFileInfo._samplingRate,_wavFileInfo._numberOfChannels,QAudioFormat::SampleFormat::Int32);
+                break;
+        }
+    }
+    else if(_typeID ==3)
+    {
+        _audioPlayer->PlayAudio(*sound,_wavFileInfo._samplingRate,_wavFileInfo._numberOfChannels,QAudioFormat::SampleFormat::Float);
+    }
 }

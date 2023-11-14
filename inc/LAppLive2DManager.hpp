@@ -10,6 +10,7 @@
 #include <CubismFramework.hpp>
 #include <Math/CubismMatrix44.hpp>
 #include <Type/csmVector.hpp>
+#include <QByteArray>
 
 class LAppModel;
 
@@ -31,7 +32,7 @@ public:
     static LAppLive2DManager* GetInstance();
 
     /**
-    * @brief   クラスのインスタンス（シングルトン）を解放する。
+    * @brief   释放类的实例（单例）。
     *
     */
     static void ReleaseInstance();
@@ -88,12 +89,18 @@ public:
      * @brief   モデル個数を得る
      * @return  所持モデル個数
      */
-    Csm::csmUint32 GetModelNum() const;
+    [[nodiscard]] Csm::csmUint32 GetModelNum() const;
 
     /**
      * @brief   viewMatrixをセットする
      */
     void SetViewMatrix(Live2D::Cubism::Framework::CubismMatrix44* m);
+
+    /**
+     * @brief   根据AI的回答控制模型
+     * @param   sound WAV音频数据地址(如果有的话)
+     */
+    void RobotControl(Csm::csmChar *motion_group, Csm::csmChar *expression, const std::shared_ptr<QByteArray>& sound);
 
 private:
     /**

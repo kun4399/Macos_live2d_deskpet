@@ -1,4 +1,4 @@
-target_sources(QuietFriend
+target_sources(ChatFriend
         PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.cpp
@@ -21,9 +21,8 @@ target_sources(QuietFriend
       ${CMAKE_CURRENT_SOURCE_DIR}/message_queue.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/resource_loader.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/cJSON.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/AudioVolum.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/AudioVolum.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/AudioUtil.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/AudioUtil.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Networkutil.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Networkutil.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ChatDialog.h

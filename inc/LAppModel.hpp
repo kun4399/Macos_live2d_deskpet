@@ -12,7 +12,7 @@
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
 #include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
-
+#include "QByteArray"
 #include "LAppWavFileHandler.hpp"
 
 /**
@@ -32,7 +32,7 @@ public:
      * @brief デストラクタ
      *
      */
-    virtual ~LAppModel();
+    ~LAppModel() override;
 
     /**
      * @brief model3.jsonが置かれたディレクトリとファイルパスからモデルを生成する
@@ -68,7 +68,9 @@ public:
      * @param[in]   onFinishedMotionHandler     在动作播放结束时调用的回调函数。如果为NULL，则不会被调用。
      * @return                                  返回开始的动作的识别号码。这个号码将被用作判断个别动作是否已经结束的IsFinished()函数的参数。如果无法开始，则返回"-1"。
      */
-    Csm::CubismMotionQueueEntryHandle StartMotion(const Csm::csmChar* group, Csm::csmInt32 no, Csm::csmInt32 priority, Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = NULL);
+    Csm::CubismMotionQueueEntryHandle StartMotion(const Csm::csmChar *group, Csm::csmInt32 no, Csm::csmInt32 priority,
+                                                  Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = nullptr,
+                                                  std::shared_ptr<QByteArray> sound= nullptr);
 
     /**
      * @brief   开始播放随机选择的动作。
@@ -78,7 +80,7 @@ public:
      * @param[in]   onFinishedMotionHandler     モーション再生終了時に呼び出されるコールバック関数。NULLの場合、呼び出されない。
      * @return                                  開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
      */
-    Csm::CubismMotionQueueEntryHandle StartRandomMotion(const Csm::csmChar* group, Csm::csmInt32 priority, Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = NULL);
+    Csm::CubismMotionQueueEntryHandle StartRandomMotion(const Csm::csmChar* group, Csm::csmInt32 priority, Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = nullptr);
 
     /**
      * @brief   引数で指定した表情モーションをセットする 设置由参数指定的表情动作。
@@ -97,7 +99,7 @@ public:
     * @brief   イベントの発火を受け取る 接收事件的触发
     *
     */
-    virtual void MotionEventFired(const Live2D::Cubism::Framework::csmString& eventValue);
+    void MotionEventFired(const Live2D::Cubism::Framework::csmString& eventValue) override;
 
     /**
      * @brief    当たり判定テスト。<br>
@@ -107,12 +109,24 @@ public:
      * @param[in]   x               判定を行うX座標
      * @param[in]   y               判定を行うY座標
      */
-    virtual Csm::csmBool HitTest(const Csm::csmChar* hitAreaName, Csm::csmFloat32 x, Csm::csmFloat32 y);
+    Csm::csmBool HitTest(const Csm::csmChar* hitAreaName, Csm::csmFloat32 x, Csm::csmFloat32 y);
 
     /**
      * @brief   別ターゲットに描画する際に使用するバッファの取得
      */
     Csm::Rendering::CubismOffscreenFrame_OpenGLES2& GetRenderBuffer();
+
+    /**
+     * @brief  判断是否碰撞到了HitArea
+     * @return 返回碰撞到的HitArea的index。如果没有碰撞到，则返回-1。
+     */
+    Csm::csmInt32 HitTest(Csm::csmFloat32 x, Csm::csmFloat32 y);
+
+    Csm::csmBool StartRandomMotionOrExpression(Csm::csmInt32 hit_area_index, Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = nullptr);
+
+    Csm::csmBool ExpressionExists(const Csm::csmChar* expressionID) const;
+
+    Csm::csmBool MotionGroupExists(const Csm::csmChar* motion_group) const;
 
 protected:
     /**

@@ -1,77 +1,10 @@
 ﻿#include "event_handler.hpp"
-#include "message_queue.hpp"
-#include <thread>
-#include "resource_loader.hpp"
-#include "qf_log.h"
-#include "cJSON.h"
-#include <QtEvents>
-#include <QApplication>
-
 namespace {
-    constexpr int max_msg_count = 8;
-
-    struct msg_packet : msg_queue::message {
-        event_handler::event_type type;
-        void *data;
-
-        void release() override {
-            free(data);
-            data = NULL;
-        }
-    };
-
-    std::thread handle_thread;
-    msg_queue mq;
-    QMainWindow *qmw;
-
-    void handle_task() {
-        msg_packet packet;
-        while (true) {
-            if (mq.get(&packet) == msg_queue::status::success) {
-                switch (packet.type) {
-                    case event_handler::event_type::app_exit: {
-                        QF_LOG_INFO("thread exit");
-                        return;
-                    }
-                    case event_handler::event_type::app_config_change: {
-                        char *config = (char *) packet.data;
-                        const char *config_path = resource_loader::get_instance().get_config_path();
-                        if (config != NULL) {
-                            FILE *fd = std::fopen(config_path, "w");
-                            if (fd == NULL) {
-                                QF_LOG_ERROR("open file fail:%s", config_path);
-                            } else {
-                                QF_LOG_INFO("save config success");
-                                fwrite(config, 1, strlen(config), fd);
-                            }
-                            cJSON_free(config);
-                            fclose(fd);
-                        }
-                    }
-                        break;
-                    case event_handler::event_type::app_all_modle_load_fail:
-                        if (qmw) {
-                            QF_LOG_INFO("no modle load");
-                            QApplication::postEvent(qmw, new QfQevent("no model use", QfQevent::event_type::no_modle));
-                        }
-                        break;
-                    case event_handler::event_type::app_current_modle_fail_by_initialize:
-                        if (qmw) {
-                            QF_LOG_INFO("position update");
-                            QApplication::postEvent(qmw, new QfQevent("load current model fail,so load default model",
-                                                                      QfQevent::event_type::load_default_model));
-                        }
-                    default:
-                        QF_LOG_INFO("error msg:%d", packet.data);
-                        break;
-
-                }
-            }
-        }
-    }
 
     const QEvent::Type mtype = (QEvent::Type) QEvent::registerEventType();
+    QMainWindow *qmw;
 }
+msg_queue event_handler::mq(8);
 
 QfQevent::QfQevent(const char *why, event_type e) : QEvent(mtype) {
     this->why = why;
@@ -83,50 +16,69 @@ event_handler &event_handler::get_instance() {
     return handler;
 }
 
-void event_handler::report(event_handler::event_type e, void *data) {
-    msg_packet pack;
-    pack.data = data;
-    pack.type = e;
-    mq.post(&pack);
-}
 
-void event_handler::release() {
-    if (is_init) {
-        msg_packet pack;
-        pack.data = NULL;
-        pack.type = event_handler::event_type::app_exit;
-        mq.post(&pack);
-        handle_thread.join();
-        mq.release();
-        is_init = false;
-        QF_LOG_INFO("release");
-    } else {
-        QF_LOG_INFO("no release");
-    }
-}
-
-bool event_handler::initialize() {
-    if (is_init) {
-        return true;
-    }
-
-    if (mq.initialize(sizeof(msg_packet), max_msg_count) != msg_queue::status::success) {
-        QF_LOG_ERROR("initialize mq fail");
-        return false;
-    }
-    handle_thread = std::thread(handle_task);
-    is_init = true;
-    return true;
-}
-
-event_handler::event_handler() {
-    is_init = false;
+event_handler::event_handler() : handle_thread(&event_handler::handle_task) {
+    QF_LOG_DEBUG("event handler init");
 }
 
 event_handler::~event_handler() {
-    this->release();
 }
 
 void event_handler::register_main_window(QMainWindow *mw) {
     qmw = mw;
 }
+
+void event_handler::handle_task() {
+    while (true) {
+        auto type = mq.getType();
+        QF_LOG_DEBUG("get message type: %d", type);
+        if (type == msg_queue::message_type::none) {
+            continue;
+        } else if (type == msg_queue::message_type::app_exit) {
+            msg_queue::msg_guard<QJsonObject> msg{};
+            mq.get<QJsonObject>(msg);
+            if ((msg.data_ != nullptr)) {
+                QJsonDocument doc(*msg.data_);
+                QFile file(resource_loader::get_instance().get_config_path());
+                if (file.open(QIODevice::WriteOnly)) {
+                    file.write(doc.toJson());
+                    file.close();
+                    QF_LOG_INFO("config save success!");
+                }
+            }
+            QF_LOG_INFO("app exit");
+            return;
+        } else if (type == msg_queue::message_type::app_config_save) {
+            msg_queue::msg_guard<QJsonObject> msg{};
+            mq.get<QJsonObject>(msg);
+            if ((msg.data_ != nullptr)) {
+                /// 将json写入文件
+                QJsonDocument doc(*msg.data_);
+                QFile file(resource_loader::get_instance().get_config_path());
+                if (file.open(QIODevice::WriteOnly)) {
+                    file.write(doc.toJson());
+                    file.close();
+                    QF_LOG_INFO("config save success!");
+                }
+            } else {
+                QF_LOG_ERROR("app config save fail!");
+            }
+        } else if (type == msg_queue::message_type::app_all_model_load_fail) {
+            QF_LOG_ERROR("app all model load fail");
+            QApplication::postEvent(qmw, new QfQevent("app all model load fail", QfQevent::event_type::no_modle));
+        } else if (type == msg_queue::message_type::app_current_model_load_fail) {
+            QF_LOG_ERROR("app current model load fail");
+            QApplication::postEvent(qmw, new QfQevent("app current model load fail",
+                                                      QfQevent::event_type::load_default_model));
+        }
+
+    }
+}
+
+void event_handler::release() {
+    mq.post<QJsonObject>(msg_queue::message_type::app_exit, nullptr);
+    handle_thread.join();
+    QF_LOG_DEBUG("event handler release success");
+}
+
+

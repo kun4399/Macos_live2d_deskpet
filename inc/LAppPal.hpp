@@ -41,7 +41,7 @@ public:
     static void ReleaseBytes(Csm::csmByte* byteData);
 
     /**
-    * @biref   デルタ時間（前回フレームとの差分）を取得する
+    * @biref   获取Delta时间（与上一帧的差异）
     *
     * @return  デルタ時間[ms]
     *

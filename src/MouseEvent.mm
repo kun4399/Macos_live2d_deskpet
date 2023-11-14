@@ -23,16 +23,16 @@ bool MyEventFilter::nativeEventFilter(const QByteArray &eventType, void *message
     int y = (resource.screen_height-(int)resource.current_model_y)-(int)mouseLocation.y;
     // 根据事件类型执行不同的操作
     switch ([event type]) {
-        case NSLeftMouseDown:
+        case NSEventTypeLeftMouseDown:
 //            qDebug() << "NSLeftMouseDown:x:" << x << "y:" << y;
             LAppDelegate::GetInstance()->mouseReleaseEvent(x, y);
 //            LAppDelegate::GetInstance()->mousePressEvent(x, y);
             break;
-        case NSLeftMouseUp:
+        case NSEventTypeLeftMouseUp:
 //            LAppDelegate::GetInstance()->mouseReleaseEvent(x, y);
             LAppDelegate::GetInstance()->mousePressEvent(x, y);
             break;
-        case NSMouseMoved:
+        case NSEventTypeMouseMoved:
             LAppDelegate::GetInstance()->mouseMoveEvent(x, y);
             break;
         default:

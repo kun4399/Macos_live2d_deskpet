@@ -4,10 +4,12 @@
 
 #include "ChatDialog.h"
 #include <QMouseEvent>
+
 //namespace {
 //    int pos_x;
 //    int pos_y;
-//}
+//
+
 ChatDialog::ChatDialog(QWidget *parent) : QDialog(parent) {
     setWindowTitle("聊天");
     this->setAttribute(Qt::WA_TranslucentBackground);
@@ -15,10 +17,10 @@ ChatDialog::ChatDialog(QWidget *parent) : QDialog(parent) {
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setWindowFlag(Qt::NoDropShadowWindowHint);
 //    this->setWindowFlag(Qt::WindowStaysOnTopHint);
-    auto& model = resource_loader::get_instance();
+    auto &model = resource_loader::get_instance();
     this->resize(model.dialog_width, model.dialog_height);
     this->move(model.dialog_x, model.dialog_y);
-
+    network_manager_ = new NetworkManager(this);
     // 创建 QVBoxLayout 用于放置 QTextEdit 控件
     auto *layout = new QVBoxLayout(this);
 
@@ -35,7 +37,7 @@ ChatDialog::ChatDialog(QWidget *parent) : QDialog(parent) {
     textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     // 添加文本内容
-    textEdit->setPlainText("This is some example text that can be scrolled but not edited.");
+    textEdit->setPlainText("输入你的消息：");
 
     // 将 QTextEdit 添加到布局
     layout->addWidget(textEdit);
@@ -54,19 +56,39 @@ ChatDialog::~ChatDialog() {
     delete textEdit;
     delete inputLine;
     delete sendButton;
-    delete networkManager;
 }
 
 void ChatDialog::sendMessage() {
     QString message = inputLine->text();
     if (!message.isEmpty()) {
+        sendButton->setEnabled(false);
         textEdit->append("You:\n " + message);
         inputLine->clear();
         // 滚动到底部
         QTextCursor cursor = textEdit->textCursor();
         cursor.movePosition(QTextCursor::End);
         textEdit->setTextCursor(cursor);
+        if (resource_loader::get_instance().gpt_enable_) { network_manager_->SendRequest(message); }
+        else {
+            textEdit->append("GPT serves is not enabled");
+            sendButton->setEnabled(true);
+            // 滚动到底部
+            QTextCursor cursor = textEdit->textCursor();
+            cursor.movePosition(QTextCursor::End);
+            textEdit->setTextCursor(cursor);
+            sendButton->setEnabled(true);
+        }
     }
+}
+
+void ChatDialog::BotReply(const QString &content) {
+    textEdit->append("Bot:\n " + content);
+    sendButton->setEnabled(true);
+    // 滚动到底部
+    QTextCursor cursor = textEdit->textCursor();
+    cursor.movePosition(QTextCursor::End);
+    textEdit->setTextCursor(cursor);
+    sendButton->setEnabled(true);
 }
 
 //void ChatDialog::mousePressEvent(QMouseEvent *event) {

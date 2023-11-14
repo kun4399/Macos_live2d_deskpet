@@ -1,11 +1,9 @@
-﻿#include "cJSON.h"
-#include "qf_log.h"
-#include <cstdio>
-#include <cstring>
+﻿#include "qf_log.h"
 #include "resource_loader.hpp"
 #include "event_handler.hpp"
 
-#define  CONFIG_JSON_FILE_PATH  "/Users/gaoyukun/github/qf/Resources/config.json"
+
+#define  Resources_FILE_PATH  "/Users/gaoyukun/github/qf/Resources"
 namespace {
     constexpr int config_file_size = 4096;
 }
@@ -15,329 +13,157 @@ bool resource_loader::initialize() {
         QF_LOG_ERROR("initialize finished");
         return true;
     }
-
-    FILE *fd = std::fopen(CONFIG_JSON_FILE_PATH, "r");
-    if (fd == nullptr) {
-        QF_LOG_ERROR("open file fail:%s", CONFIG_JSON_FILE_PATH);
+//    QDir currentDir = QDir::current();
+//    qDebug() << "Current Path: " << currentDir.absolutePath();
+    resource_file_path = QString(Resources_FILE_PATH);
+    QFile file(resource_file_path + "/config.json");
+    if (!file.open(QIODevice::ReadOnly)) {
+        QF_LOG_ERROR("open config.json failed, path:%s", resource_file_path.toStdString().c_str());
         return false;
     }
-    fseek(fd, 0, SEEK_END);
-    int file_size = ftell(fd);
-    if (file_size >= config_file_size) {
-        QF_LOG_ERROR("config file is to large");
-        fclose(fd);
+    QByteArray data = file.readAll();
+    file.close();
+    QJsonParseError json_error;
+    QJsonDocument json_doc(QJsonDocument::fromJson(data, &json_error));
+    if (json_error.error != QJsonParseError::NoError) {
+        QF_LOG_ERROR("parse json failed, error:%s", json_error.errorString().toStdString().c_str());
         return false;
     }
-    rewind(fd);
-    char buffer[config_file_size];
-    file_size = fread(buffer, 1, file_size, fd);
-    fclose(fd);
-    buffer[file_size] = 0;
-    cJSON *root = cJSON_Parse(buffer);
-    if (root == nullptr) {
-        QF_LOG_ERROR("parse fail:%s", buffer);
-        fclose(fd);
-        return false;
-    }
-    cJSON *node = cJSON_GetObjectItem(root, "systemtray");
-    if (node != nullptr && cJSON_IsString(node)) {
-        snprintf(system_tray_icon_path, resource_path_size, "/Users/gaoyukun/github/qf/Resources/%s",
-                 cJSON_GetStringValue(node));
+    root_ = json_doc.object();
+    QJsonValue system_tray = root_.value("systemtray");
+    if (system_tray.isString()) {
+        system_tray_icon_path = system_tray.toString();
     } else {
-        snprintf(system_tray_icon_path, resource_path_size, "/Users/gaoyukun/github/qf/Resources/Qf.PNG");
+        system_tray_icon_path = "/Qf.PNG";
+        QF_LOG_ERROR("system tray is not defined, use default icon");
     }
 
-    node = cJSON_GetObjectItem(root, "module");
-    if (node != nullptr && cJSON_IsArray(node)) {
-        for (int i = 0; i < cJSON_GetArraySize(node); i++) {
-            cJSON *model_ptr = cJSON_GetArrayItem(node, i);
-            // 提取模型
-            if (model_ptr != nullptr && cJSON_IsObject(model_ptr)) {
-                cJSON *tmp_value = cJSON_GetObjectItem(model_ptr, "name");
-                resource_loader::model tmp_model{};
-                if (tmp_value != nullptr && cJSON_IsString(tmp_value)) {
-                    snprintf((char *) tmp_model.name, resource_name_size, "%s", cJSON_GetStringValue(tmp_value));
+    QJsonValue module = root_.value("module");
+    if (module.isArray()) {
+        // 加载模型
+        QJsonArray module_array = std::move(module.toArray());
+        for (auto && i : module_array) {
+            QJsonValue model_value = i;
+            if (model_value.isObject()) {
+                QJsonObject model_object = model_value.toObject();
+                QJsonValue name_value = model_object.value("name");
+                QJsonValue width = model_object.value("width");
+                QJsonValue height = model_object.value("height");
+                if (name_value.isString() && width.isDouble() && height.isDouble()) {
+                    resource_loader::model tmp_model{};
+                    tmp_model.name = name_value.toString();
+                    tmp_model.model_width = width.toInt();
+                    tmp_model.model_height = height.toInt();
+                    model_list.push_back(tmp_model);
                 } else {
-                    continue;
+                    QF_LOG_ERROR("model format error: name:%s, width:%s, height:%s",
+                                 name_value.toString().toStdString().c_str(),
+                                 width.toString().toStdString().c_str(),
+                                 height.toString().toStdString().c_str());
+                    return false;
                 }
-
-                tmp_value = cJSON_GetObjectItem(model_ptr, "window_x");
-                if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-                    tmp_model.model_with = (int) cJSON_GetNumberValue(tmp_value);
-                } else {
-                    continue;
-                }
-
-                tmp_value = cJSON_GetObjectItem(model_ptr, "window_y");
-                if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-                    tmp_model.model_height = (int) cJSON_GetNumberValue(tmp_value);
-                } else {
-                    continue;
-                }
-                model_list.push_back(tmp_model);
             } else {
-                continue;
+                QF_LOG_ERROR("model format error: model json format error");
+                return false;
             }
         }
     } else {
-        cJSON_Delete(root);
+        QF_LOG_ERROR("module format error: module json is not array");
         return false;
     }
 
     if (model_list.empty()) {
-        cJSON_Delete(root);
+        QF_LOG_ERROR("module format error: module array is empty");
         return false;
     }
 
     current_model_index = 0;
-    current_model = &model_list[0];
-    node = cJSON_GetObjectItem(root, "userdata");
-    if (node != nullptr && cJSON_IsObject(node)) {
-        cJSON *tmp_value = cJSON_GetObjectItem(node, "current_model");
-        if (tmp_value != nullptr && cJSON_IsString(tmp_value)) {
-            update_current_model(cJSON_GetStringValue(tmp_value));
+    QJsonValue userdata = root_.value("userdata");
+    if (userdata.isObject()) { // 检查是否是json对象
+        QJsonObject userdata_object = userdata.toObject();
+        QJsonValue current_model_value = userdata_object.value("current_model");
+        if (current_model_value.isString()) {
+            update_current_model(current_model_value.toString());
         }
 
-        tmp_value = cJSON_GetObjectItem(node, "top");
-        if (tmp_value != nullptr && cJSON_IsBool(tmp_value)) {
-            top_ = cJSON_IsTrue(tmp_value);
+        QJsonValue top_value = userdata_object.value("top");
+        if (top_value.isBool()) {
+            top_ = top_value.toBool();
         } else {
-            cJSON_AddBoolToObject(node, "top", false);
             top_ = false;
         }
 
-//        tmp_value = cJSON_GetObjectItem(node, "move");
-//        if (tmp_value != nullptr && cJSON_IsBool(tmp_value)) {
-//            move = cJSON_IsTrue(tmp_value);
-//        } else {
-//            cJSON_AddBoolToObject(node, "move", false);
-//            move = false;
-//        }
-
-        tmp_value = cJSON_GetObjectItem(node, "window_x");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            current_model_x = (int) cJSON_GetNumberValue(tmp_value);
+        QJsonValue window_x_value = userdata_object.value("window_x");
+        if (window_x_value.isDouble()) {
+            current_model_x = window_x_value.toInt();
         }
 
-        tmp_value = cJSON_GetObjectItem(node, "window_y");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            current_model_y = (int) cJSON_GetNumberValue(tmp_value);
+        QJsonValue window_y_value = userdata_object.value("window_y");
+        if (window_y_value.isDouble()) {
+            current_model_y = window_y_value.toInt();
         }
 
-        tmp_value = cJSON_GetObjectItem(node, "dialog_x");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            dialog_x = (int) cJSON_GetNumberValue(tmp_value);
+        QJsonValue dialog_x_value = userdata_object.value("dialog_x");
+        if (dialog_x_value.isDouble()) {
+            dialog_x = dialog_x_value.toInt();
         }
 
-        tmp_value = cJSON_GetObjectItem(node, "dialog_y");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            dialog_y = (int) cJSON_GetNumberValue(tmp_value);
+        QJsonValue dialog_y_value = userdata_object.value("dialog_y");
+        if (dialog_y_value.isDouble()) {
+            dialog_y = dialog_y_value.toInt();
         }
 
-        tmp_value = cJSON_GetObjectItem(node, "dialog_width");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            dialog_width = (int) cJSON_GetNumberValue(tmp_value);
+        QJsonValue dialog_width_value = userdata_object.value("dialog_width");
+        if (dialog_width_value.isDouble()) {
+            dialog_width = dialog_width_value.toInt();
         }
-
-        tmp_value = cJSON_GetObjectItem(node, "dialog_height");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            dialog_height = (int) cJSON_GetNumberValue(tmp_value);
+        QJsonValue dialog_height_value = userdata_object.value("dialog_height");
+        if (dialog_height_value.isDouble()) {
+            dialog_height = dialog_height_value.toInt();
         }
     } else {
-        top_ = false;
-//        move = false;
+        QF_LOG_ERROR("userdata format error: userdata is not json object");
+        return false;
     }
-
-    //cJSON_Delete(root);
-    json_root = (void *) root;
+    QJsonValue gpt_api = root_.value("azure_api");
+    if (gpt_api.isObject()) {
+        QJsonObject gpt_api_object = gpt_api.toObject();
+        QJsonValue gpt_api_url_value = gpt_api_object.value("url");
+        if (gpt_api_url_value.isString()) {
+            gpt_api_url = std::move(gpt_api_url_value.toString());
+        } else {
+            QF_LOG_INFO("azure_api_url is not defined");
+        }
+        QJsonValue gpt_api_key_value = gpt_api_object.value("key");
+        if (gpt_api_key_value.isString()) {
+            gpt_api_key = std::move(gpt_api_key_value.toString());
+        } else {
+            QF_LOG_INFO("azure_api_key is not defined");
+        }
+        if (!gpt_api_url.isEmpty() && !gpt_api_key.isEmpty()) {
+            gpt_enable_ = true;
+        }
+    } else {
+        QF_LOG_INFO("azure_api is not defined");
+    }
     is_init = true;
     return true;
+
 }
-
-void resource_loader::release() {
-    if (!is_init) {
-        return;
-    }
-
-    char *new_config = cJSON_Print((cJSON *) json_root);
-    event_handler::get_instance().report(event_handler::event_type::app_config_change, new_config);
-    cJSON_Delete((cJSON *) json_root);
-    QF_LOG_INFO("release");
-    is_init = false;
-}
-
-const std::vector<resource_loader::model> &resource_loader::get_model_list() {
-    return model_list;
-}
-
-const char *resource_loader::get_system_tray_icon_path() {
-    return system_tray_icon_path;
-}
-
-const resource_loader::model *resource_loader::get_current_model() {
-    return current_model;
-}
-
-int resource_loader::get_current_model_index() const {
-    return current_model_index;
-}
-
-bool resource_loader::update_current_model(const char *name) {
-    for (uint32_t i = 0; i < model_list.size(); i++) {
-        if (strncmp(name, model_list[i].name, resource_name_size) == 0) {
-            current_model_index = i;
-            current_model = &model_list[i];
-            return true;
-        }
-    }
-    return false;
-}
-
-bool resource_loader::update_current_model(uint32_t index) {
-    if (index < model_list.size()) {
-        if (&model_list[index] != current_model) {
-            current_model = &model_list[index];
-            cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-            if (node != nullptr && cJSON_IsObject(node)) {
-                cJSON *tmp_value = cJSON_GetObjectItem(node, "current_model");
-                if (tmp_value != nullptr && cJSON_IsString(tmp_value)) {
-                    cJSON_SetValuestring(tmp_value, current_model->name);
-                } else {
-                    cJSON *m = cJSON_CreateString(current_model->name);
-                    cJSON_AddItemToObject(node, "current_model", m);
-                }
-            } else {
-                cJSON *obj = cJSON_CreateObject();
-                cJSON_AddItemToObject((cJSON *) json_root, "userdata", obj);
-                cJSON *m = cJSON_CreateString(current_model->name);
-                cJSON_AddItemToObject(node, "current_model", m);
-            }
-            current_model_index = index;
-            char *new_config = cJSON_Print((cJSON *) json_root);
-            event_handler::get_instance().report(event_handler::event_type::app_config_change, new_config);
-            return true;
-        }
-    }
-    return false;
-}
-
-bool resource_loader::is_top() const {
-    return top_;
-}
-
-void resource_loader::set_top(bool top) {
-    if (this->top_ != top) {
-        this->top_ = top;
-        cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-        if (node != nullptr && cJSON_IsObject(node)) {
-
-            cJSON *new_item = cJSON_CreateBool(top);
-            cJSON_ReplaceItemInObject(node, "top", new_item);
-        } else {
-            cJSON *obj = cJSON_CreateObject();
-            cJSON_AddItemToObject((cJSON *) json_root, "userdata", obj);
-            cJSON *m = cJSON_CreateBool(top);
-            cJSON_AddItemToObject(node, "top", m);
-        }
-        char *new_config = cJSON_Print((cJSON *) json_root);
-        event_handler::get_instance().report(event_handler::event_type::app_config_change, new_config);
-    }
-}
-
-//bool resource_loader::moveable() {
-//    return move;
-//}
-
-//void resource_loader::set_moveable(bool m) {
-//    if (this->move != m) {
-//        this->move = m;
-//        cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-//        if (node != nullptr && cJSON_IsObject(node)) {
-//            cJSON *new_item = cJSON_CreateBool(this->move);
-//            cJSON_ReplaceItemInObject(node, "move", new_item);
-//        } else {
-//            cJSON *obj = cJSON_CreateObject();
-//            cJSON_AddItemToObject((cJSON *) json_root, "userdata", obj);
-//            cJSON *m = cJSON_CreateBool(this->move);
-//            cJSON_AddItemToObject(node, "move", m);
-//        }
-//
-//        char *new_config = cJSON_Print((cJSON *) json_root);
-//        event_handler::get_instance().report(event_handler::event_type::app_config_change, new_config);
-//    }
-//}
 
 
 bool resource_loader::update_current_model_size(int x, int y) {
-    current_model->model_with = x;
-    current_model->model_height = y;
-    do {
-        cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "module");
-        if (node != nullptr && cJSON_IsArray(node)) {
-            int index = current_model - &model_list[0];
-            QF_LOG_INFO("index:%d", index);
-            cJSON *model_ptr = cJSON_GetArrayItem(node, index);
-            if (model_ptr != nullptr && cJSON_IsObject(model_ptr)) {
-                cJSON *tmp_value = cJSON_GetObjectItem(model_ptr, "name");
-                if (tmp_value != nullptr && cJSON_IsString(tmp_value)) {
-                    if (strncmp(cJSON_GetStringValue(tmp_value), (char *) current_model->name, resource_name_size) !=
-                        0) {
-                        QF_LOG_ERROR("%s,%s", cJSON_GetStringValue(tmp_value), (char *) current_model->name);
-                        break;
-                    }
-                } else {
-                    break;
-                }
-
-                tmp_value = cJSON_GetObjectItem(model_ptr, "window_x");
-                if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-                    cJSON_SetNumberValue(tmp_value, x);
-                } else {
-                    break;
-                }
-
-                tmp_value = cJSON_GetObjectItem(model_ptr, "window_y");
-                if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-                    cJSON_SetNumberValue(tmp_value, y);
-                } else {
-                    break;
-                }
-                char *new_config = cJSON_Print((cJSON *) json_root);
-                event_handler::get_instance().report(event_handler::event_type::app_config_change, new_config);
-            }
-            return true;
-        }
-    } while (false);
-    return false;
+    model_list[current_model_index].model_width = x;
+    model_list[current_model_index].model_height = y;
+    config_change = true;
+    return true;
 }
 
 bool resource_loader::update_current_model_position(int x, int y) {
     current_model_x = x;
     current_model_y = y;
-    cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-    if (node != nullptr && cJSON_IsObject(node)) {
-        cJSON *tmp_value = cJSON_GetObjectItem(node, "window_x");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            cJSON_SetNumberValue(tmp_value, x);
-        } else {
-            return false;
-        }
-
-        tmp_value = cJSON_GetObjectItem(node, "window_y");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            cJSON_SetNumberValue(tmp_value, y);
-        } else {
-            return false;
-        }
-        char *new_config = cJSON_Print((cJSON *) json_root);
-        event_handler::get_instance().report(event_handler::event_type::app_config_change, new_config);
-    }
-    qDebug("success_update_current_model_position:%d,%d", x, y);
+    config_change = true;
     return true;
-}
-
-const char *resource_loader::get_config_path() {
-    return CONFIG_JSON_FILE_PATH;
 }
 
 resource_loader::~resource_loader() {
@@ -347,47 +173,119 @@ resource_loader::~resource_loader() {
 bool resource_loader::update_dialog_position(int x, int y) {
     dialog_x = x;
     dialog_y = y;
-    cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-    if (node != nullptr && cJSON_IsObject(node)) {
-        cJSON *tmp_value = cJSON_GetObjectItem(node, "dialog_x");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            cJSON_SetNumberValue(tmp_value, x);
-        } else {
-            return false;
-        }
-
-        tmp_value = cJSON_GetObjectItem(node, "dialog_y");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            cJSON_SetNumberValue(tmp_value, y);
-        } else {
-            return false;
-        }
-        char *new_config = cJSON_Print((cJSON *) json_root);
-        event_handler::get_instance().report(event_handler::event_type::app_config_change, new_config);
-    }
+    config_change = true;
     return true;
 }
 
 bool resource_loader::update_dialog_size(int width, int height) {
     dialog_width = width;
     dialog_height = height;
-    cJSON *node = cJSON_GetObjectItem((cJSON *) json_root, "userdata");
-    if (node != nullptr && cJSON_IsObject(node)) {
-        cJSON *tmp_value = cJSON_GetObjectItem(node, "dialog_width");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            cJSON_SetNumberValue(tmp_value, width);
-        } else {
-            return false;
-        }
+    config_change = true;
+    return true;
+}
 
-        tmp_value = cJSON_GetObjectItem(node, "dialog_height");
-        if (tmp_value != nullptr && cJSON_IsNumber(tmp_value)) {
-            cJSON_SetNumberValue(tmp_value, height);
-        } else {
-            return false;
-        }
-        char *new_config = cJSON_Print((cJSON *) json_root);
-        event_handler::get_instance().report(event_handler::event_type::app_config_change, new_config);
+bool resource_loader::save_config()  {
+    if (!is_init || !config_change) { return true; }
+    config_change = false;
+    QF_LOG_DEBUG("start to save config");
+    auto * root = new QJsonObject();
+    root->insert("systemtray", system_tray_icon_path);
+    QJsonArray module_array;
+    for (const auto &item: model_list) {
+        QJsonObject model_object;
+        model_object.insert("name", item.name);
+        model_object.insert("width", item.model_width);
+        model_object.insert("height", item.model_height);
+        module_array.append(model_object);
+    }
+    root->insert("module", module_array);
+    QJsonObject userdata_object;
+    userdata_object.insert("current_model", model_list[current_model_index].name);
+    userdata_object.insert("top", top_);
+    userdata_object.insert("window_x", current_model_x);
+    userdata_object.insert("window_y", current_model_y);
+    userdata_object.insert("dialog_x", dialog_x);
+    userdata_object.insert("dialog_y", dialog_y);
+    userdata_object.insert("dialog_width", dialog_width);
+    userdata_object.insert("dialog_height", dialog_height);
+    root->insert("userdata", userdata_object);
+    QJsonObject azure_api_object;
+    azure_api_object.insert("url", gpt_api_url);
+    azure_api_object.insert("key", gpt_api_key);
+    root->insert("azure_api", azure_api_object);
+    auto result = event_handler::get_instance().report<QJsonObject>(msg_queue::message_type::app_config_save,root);
+    if (result != msg_queue::status::success) {
+        QF_LOG_ERROR("save config failed, error:%d", result);
+        return false;
     }
     return true;
+}
+
+void resource_loader::release() {
+    if (!is_init) {
+        return;
+    }
+    if (config_change) {
+        save_config();
+    }
+    is_init = false;
+    event_handler::get_instance().release();
+}
+
+const QVector<resource_loader::model> &resource_loader::get_model_list() {
+    return model_list;
+}
+
+QString resource_loader::get_system_tray_icon_path() {
+    return resource_file_path +"/"+ system_tray_icon_path;
+}
+
+const resource_loader::model *resource_loader::get_current_model() {
+    return &model_list[current_model_index];
+}
+
+int resource_loader::get_current_model_index() const {
+    return current_model_index;
+}
+
+bool resource_loader::update_current_model(QString name) {
+    for (uint32_t i = 0; i < model_list.size(); i++) {
+        if (name == model_list[i].name) {
+            current_model_index = i;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool resource_loader::update_current_model(uint32_t index) {
+    if (index < model_list.size()) {
+        current_model_index = (int) index;
+        return true;
+    }
+    return false;
+
+}
+
+bool resource_loader::is_top() const {
+    return top_;
+}
+
+void resource_loader::set_top(bool top) {
+    if (this->top_ != top) {
+        top_ = top;
+        config_change = true;
+    }
+}
+
+QString resource_loader::get_config_path() const {
+    return resource_file_path + "/config.json";
+}
+
+const QString& resource_loader::get_gpt_url() const {
+    return gpt_api_url;
+}
+
+const QString& resource_loader::get_gpt_key() const {
+    return gpt_api_key;
 }

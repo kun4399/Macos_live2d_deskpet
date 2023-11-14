@@ -9,7 +9,8 @@
 
 #include <CubismFramework.hpp>
 #include <Utils/CubismString.hpp>
-#
+#include "QByteArray"
+#include "AudioUtil.h"
  /**
   * @brief wavファイルハンドラ
   * @attention 16bit wav ファイル読み込みのみ実装済み
@@ -47,7 +48,12 @@ public:
      *
      * @retval  csmFloat32 RMS値
      */
-    Csm::csmFloat32 GetRms() const;
+    [[nodiscard]] Csm::csmFloat32 GetRms() const;
+
+    /**
+     * @brief 播放内存中的wav文件
+     */
+    void Start( std::shared_ptr<QByteArray> &sound);
 
 private:
     /**
@@ -57,7 +63,8 @@ private:
      * @retval  true    読み込み成功
      * @retval  false   読み込み失敗
      */
-    Csm::csmBool LoadWavFile(const Csm::csmString &filePath);
+    Csm::csmBool LoadWavFile(const Csm::csmString &filePath, std::shared_ptr<QByteArray> sound = nullptr);
+
 
     /**
      * @brief PCMデータの解放
@@ -78,13 +85,14 @@ private:
          * @brief コンストラクタ
          */
         WavFileInfo() : _fileName(""), _numberOfChannels(0),
-                        _bitsPerSample(0), _samplingRate(0), _samplesPerChannel(0) {}
+                        _bitsPerSample(0), _samplingRate(0), _samplesPerChannel(0),_dataOffset(0) {}
 
         Csm::csmString _fileName; ///< ファイル名
         Csm::csmUint32 _numberOfChannels; ///< チャンネル数
         Csm::csmUint32 _bitsPerSample; ///< サンプルあたりビット数
         Csm::csmUint32 _samplingRate; ///< サンプリングレート
         Csm::csmUint32 _samplesPerChannel; ///< 1チャンネルあたり総サンプル数
+        Csm::csmUint32 _dataOffset; // wav中音频数据的下标
     } _wavFileInfo;
 
     /**
@@ -169,4 +177,6 @@ private:
     Csm::csmFloat32 _lastRms; ///< 最后测量的RMS值
     Csm::csmFloat32 _userTimeSeconds; ///< 累积的Delta时间值[秒]
     Csm::csmUint32 _typeID;    ///< 读取的格式ID，除了1（线性PCM），还新增支持3（IEEE浮点）。
+
+    AudioPlayer* _audioPlayer;
 };

@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     this->setWindowFlag(Qt::NoDropShadowWindowHint); //去掉窗口阴影，这个bug查了好久好久！！！！
     this->move(resource_loader::get_instance().current_model_x, resource_loader::get_instance().current_model_y);
     auto model = resource_loader::get_instance().get_current_model();
-    this->resize(model->model_with, model->model_height);
+    this->resize(model->model_width, model->model_height);
     if (resource_loader::get_instance().is_top()) {
         this->setWindowFlag(Qt::WindowStaysOnTopHint);
     }
@@ -61,12 +61,7 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     open_dialog->setCheckable(true);
     close_dialog->setCheckable(true);
     close_dialog->setChecked(true);
-//    if (resource_loader::get_instance().moveable()) {
-//        move_on->setChecked(true);
-//    } else {
     move_off->setChecked(true);
-//    }
-
     g_move->setExclusive(true);
     m_move->addAction(move_on);
     m_move->addAction(move_off);
@@ -82,12 +77,8 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     auto cm = resource_loader::get_instance().get_current_model();
     bool find = true;
     for (auto &m: ms) {
-        auto *tmp_model = new QAction(QString(m.name), g_change);
+        auto *tmp_model = new QAction(m.name, g_change);
         tmp_model->setCheckable(true);
-        if (find && strncmp(cm->name, m.name, resource_name_size) == 0) {
-            tmp_model->setChecked(true);
-            find = false;
-        }
         model_list.push_back(tmp_model);
     }
     g_change->setExclusive(true);
@@ -113,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     m_menu->addAction(a_exit);
 //显示系统托盘
     m_systemTray->setIcon(QIcon(resource_loader::get_instance().get_system_tray_icon_path()));
-    m_systemTray->setToolTip("Qf");
+    m_systemTray->setToolTip("ChatFriend");
     m_systemTray->setContextMenu(m_menu);
     m_systemTray->show();
     connect(m_systemTray, &QSystemTrayIcon::activated, this, &MainWindow::activeTray);
@@ -122,7 +113,7 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     connect(g_move, &QActionGroup::triggered, this, &MainWindow::action_move);
     connect(g_change, &QActionGroup::triggered, this, &MainWindow::action_change);
     connect(g_dialog, &QActionGroup::triggered, this, &MainWindow::action_dialog);
-    event_handler::get_instance().register_main_window(this);
+    event_handler::register_main_window(this);
     MouseControl::enableMousePassThrough(this->winId(), true);
 }
 
@@ -137,9 +128,8 @@ void MainWindow::activeTray(QSystemTrayIcon::ActivationReason r) {
 }
 
 void MainWindow::action_exit() {
-    QF_LOG_INFO("app exit");
+    QF_LOG_INFO("main_window exit");
     resource_loader::get_instance().release();
-    event_handler::get_instance().release();
     QApplication::exit(0);
 }
 
@@ -197,15 +187,18 @@ void MainWindow::action_change(QAction *a) {
     if (resource_loader::get_instance().update_current_model(counter)) {
         bool load_fail = true;
         auto m = resource_loader::get_instance().get_current_model();
-        if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) m->name)) {
-            this->resize(m->model_with, m->model_height);
+        /// 将QString转化为char*
+        QByteArray model_name = m->name.toUtf8();
+        if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) model_name.data())) {
+            this->resize(m->model_width, m->model_height);
             load_fail = false;
         } else {
             int _counter = 0;
             for (auto &item: resource_loader::get_instance().get_model_list()) {
                 if (_counter != counter) {
-                    if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) item.name)) {
-                        this->resize(item.model_with, item.model_height);
+                    model_name = item.name.toUtf8();
+                    if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) model_name.data())) {
+                        this->resize(item.model_width, item.model_height);
                         load_fail = false;
                         auto msgIcon = QSystemTrayIcon::MessageIcon(2);
                         this->m_systemTray->showMessage(QStringLiteral("waring"),
@@ -230,7 +223,6 @@ void MainWindow::action_change(QAction *a) {
             QMessageBox::critical(this, tr("QF"), QStringLiteral("资源文件错误,程序终止"));
             QF_LOG_INFO("app exit");
             resource_loader::get_instance().release();
-            event_handler::get_instance().release();
             QApplication::exit(0);
         }
     }
@@ -243,7 +235,6 @@ MainWindow::~MainWindow() {
 void MainWindow::closeEvent(QCloseEvent *) {
     QF_LOG_INFO("app exit");
     resource_loader::get_instance().release();
-    event_handler::get_instance().release();
     QApplication::exit(0);
 }
 
@@ -254,7 +245,6 @@ void MainWindow::customEvent(QEvent *e) {
             QMessageBox::critical(this, tr("QF"), tr(event->why));
             QF_LOG_INFO("app exit");
             resource_loader::get_instance().release();
-            event_handler::get_instance().release();
             QApplication::exit(0);
             break;
         case QfQevent::event_type::load_default_model: {
@@ -263,8 +253,9 @@ void MainWindow::customEvent(QEvent *e) {
             bool load_fail = true;
             for (int i = 0; i < model_List.size(); i++) {
                 if (i != index) {
-                    if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) model_List[i].name)) {
-                        this->move(model_List[i].model_with, model_List[i].model_height);
+                    QByteArray model_name = model_List[i].name.toUtf8();
+                    if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) model_name.data())) {
+                        this->move(model_List[i].model_width, model_List[i].model_height);
                         load_fail = false;
                         auto msgIcon = QSystemTrayIcon::MessageIcon(2);
                         this->m_systemTray->showMessage(QStringLiteral("waring"), tr(event->why), msgIcon, 2000);
@@ -286,7 +277,6 @@ void MainWindow::customEvent(QEvent *e) {
                 QMessageBox::critical(this, tr("QF"), QStringLiteral("资源文件错误,程序终止"));
                 QF_LOG_INFO("app exit");
                 resource_loader::get_instance().release();
-                event_handler::get_instance().release();
                 QApplication::exit(0);
             }
             break;
@@ -306,6 +296,7 @@ void MainWindow::action_set_top() {
             dialog_window_->setWindowFlag(Qt::WindowStaysOnTopHint, false);
         }
         this->show();
+        MouseControl::enableMousePassThrough(this->winId(), true);
         if (dialog_window_->isVisible()) {
             dialog_window_->show();
         }

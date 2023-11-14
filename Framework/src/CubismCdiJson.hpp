@@ -64,7 +64,7 @@ public:
 
 private:
     /**
-     * @brief        パラメータのキーが存在するかどうかを確認する
+     * @brief        检查参数键是否存在
      *
      * @retval       true  -> キーが存在する
      * @retval       false -> キーが存在しない
@@ -72,7 +72,7 @@ private:
     csmBool IsExistParameters() const;
 
     /**
-     * @brief        パラメータグループのキーが存在するかどうかを確認する
+     * @brief        检查参数组的键是否存在
      *
      * @retval       true  -> キーが存在する
      * @retval       false -> キーが存在しない
