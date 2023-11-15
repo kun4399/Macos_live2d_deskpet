@@ -13,6 +13,7 @@
 #include "LAppDefine.hpp"
 #include "LAppLive2DManager.hpp"
 #include "LAppTextureManager.hpp"
+#include "Log_util.h"
 
 using namespace Csm;
 using namespace std;
@@ -39,15 +40,11 @@ void LAppDelegate::ReleaseInstance() {
 }
 
 bool LAppDelegate::Initialize(GLWidget *window) {
-    if (DebugLogEnable) {
-        LAppPal::PrintLog("START");
-    }
+    CF_LOG_DEBUG("START" );
 
 
     if (glewInit() != GLEW_OK) {
-        if (DebugLogEnable) {
-            LAppPal::PrintLog("Can't initilize glew.");
-        }
+        CF_LOG_ERROR("Failed to initialize GLEW.");
         return GL_FALSE;
     }
 

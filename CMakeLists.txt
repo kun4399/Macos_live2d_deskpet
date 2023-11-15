@@ -19,6 +19,11 @@ find_package(Qt6 COMPONENTS Widgets OpenGL REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets)
 find_package(Qt6 COMPONENTS Multimedia REQUIRED) # 添加qt多媒体模块
 find_package(Qt6 COMPONENTS Network REQUIRED) # 添加qt网络模块
+#find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)
+#
+#if (NOT APPLICATION_SERVICES_FRAMEWORK)
+#    message(FATAL_ERROR "ApplicationServices framework not found!")
+#endif()
 
 add_library(Live2DCubismCore STATIC IMPORTED)
 set_target_properties(Live2DCubismCore
@@ -38,7 +43,7 @@ target_compile_definitions(Framework PUBLIC CSM_TARGET_MAC_GL)
 target_include_directories(Framework PUBLIC ${GLEW_PATH}/include)
 target_link_libraries(Framework Live2DCubismCore glew_s)
 find_package(OpenGL REQUIRED)
-SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DQF_DEBUG") # debug模式下定义QF_DEBUG, 用来控制日志输出
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DCF_DEBUG") # debug模式下定义QF_DEBUG, 用来控制日志输出
 include_directories(inc)
 include_directories(src)
 include_directories(${GLEW_PATH}/include)

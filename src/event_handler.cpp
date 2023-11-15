@@ -18,7 +18,7 @@ event_handler &event_handler::get_instance() {
 
 
 event_handler::event_handler() : handle_thread(&event_handler::handle_task) {
-    QF_LOG_DEBUG("event handler init");
+    CF_LOG_DEBUG("event handler init");
 }
 
 event_handler::~event_handler() {
@@ -31,7 +31,7 @@ void event_handler::register_main_window(QMainWindow *mw) {
 void event_handler::handle_task() {
     while (true) {
         auto type = mq.getType();
-        QF_LOG_DEBUG("get message type: %d", type);
+        CF_LOG_DEBUG("get message type: %d", type);
         if (type == msg_queue::message_type::none) {
             continue;
         } else if (type == msg_queue::message_type::app_exit) {
@@ -43,10 +43,10 @@ void event_handler::handle_task() {
                 if (file.open(QIODevice::WriteOnly)) {
                     file.write(doc.toJson());
                     file.close();
-                    QF_LOG_INFO("config save success!");
+                    CF_LOG_INFO("config save success!");
                 }
             }
-            QF_LOG_INFO("app exit");
+            CF_LOG_INFO("handler thread exit");
             return;
         } else if (type == msg_queue::message_type::app_config_save) {
             msg_queue::msg_guard<QJsonObject> msg{};
@@ -58,16 +58,16 @@ void event_handler::handle_task() {
                 if (file.open(QIODevice::WriteOnly)) {
                     file.write(doc.toJson());
                     file.close();
-                    QF_LOG_INFO("config save success!");
+                    CF_LOG_INFO("config save success!");
                 }
             } else {
-                QF_LOG_ERROR("app config save fail!");
+                CF_LOG_ERROR("app config save fail!");
             }
         } else if (type == msg_queue::message_type::app_all_model_load_fail) {
-            QF_LOG_ERROR("app all model load fail");
+            CF_LOG_ERROR("app all model load fail");
             QApplication::postEvent(qmw, new QfQevent("app all model load fail", QfQevent::event_type::no_modle));
         } else if (type == msg_queue::message_type::app_current_model_load_fail) {
-            QF_LOG_ERROR("app current model load fail");
+            CF_LOG_ERROR("app current model load fail");
             QApplication::postEvent(qmw, new QfQevent("app current model load fail",
                                                       QfQevent::event_type::load_default_model));
         }
@@ -78,7 +78,7 @@ void event_handler::handle_task() {
 void event_handler::release() {
     mq.post<QJsonObject>(msg_queue::message_type::app_exit, nullptr);
     handle_thread.join();
-    QF_LOG_DEBUG("event handler release success");
+    CF_LOG_DEBUG("event handler release success");
 }
 
 

@@ -23,6 +23,8 @@ public:
 
     auto PlayAudio(const QByteArray &source,int sample_rate,int channel_count,QAudioFormat::SampleFormat sample_format) -> void;
 
+    auto PlayAudio(const QString &source) -> void;
+
 };
 
 #endif //QUIETFRIEND_AUDIOUTIL_H

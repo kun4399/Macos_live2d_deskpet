@@ -3,6 +3,7 @@
 //
 
 #include "Networkutil.h"
+#include "Log_util.h"
 
 NetworkManager::NetworkManager(QObject *parent) : QObject(parent) {
 
@@ -17,7 +18,7 @@ NetworkManager::NetworkManager(QObject *parent) : QObject(parent) {
     request_messages_ = new QJsonArray;
     QJsonObject request_message;
     request_message.insert("role", "system");
-    request_message.insert("content", SystemPrompt);
+    request_message.insert("content", resource_loader::get_instance().get_gpt_system_prompt());
     request_messages_->append(request_message);
     connect(network_manager_, &QNetworkAccessManager::finished, this, &NetworkManager::handleNetworkReply);
 
@@ -37,17 +38,18 @@ void NetworkManager::SendRequest(const QString &user_message) {
     request_messages_->append(request_message);
     QJsonObject request;
     request.insert("messages", *request_messages_);
-    qDebug() << QJsonDocument(request).toJson();
+    CF_LOG_DEBUG("request: %s", QJsonDocument(request).toJson().data());
     network_manager_->post(*gpt_request_, QJsonDocument(request).toJson());
 }
 
 bool NetworkManager::handleNetworkReply(QNetworkReply *reply) {
     if (reply->error() != QNetworkReply::NoError) {
-        qDebug() << "请求失败 Url:" << reply->url() << reply->errorString();
+//        qDebug() << "请求失败 Url:" << reply->url() << reply->errorString();
+        CF_LOG_ERROR("请求失败 Url: %s, %s", reply->url().toString().toUtf8().data(), reply->errorString().toUtf8().data());
         chat_dialog_->BotReply("请求失败");
         return false;
     }
-    qDebug() << reply->url() << "请求成功";
+    CF_LOG_INFO("请求成功 Url: %s", reply->url().toString().toUtf8().data());
     if (reply->url().toString() == resource_loader::get_instance().get_gpt_url()) {
         QByteArray reply_data = std::move(reply->readAll());
         if (!ReplyMessageProcess(reply_data)) {
@@ -60,7 +62,7 @@ bool NetworkManager::handleNetworkReply(QNetworkReply *reply) {
         chat_dialog_->BotReply(robot_message_);
         LAppLive2DManager::GetInstance()->RobotControl((Csm::csmChar*)motion_.GetRawString(),(Csm::csmChar*)expression_.GetRawString(), nullptr);
     } else {
-        qDebug()<<"NetworkManager::handleNetworkReply" <<"voice request handle";
+        CF_LOG_DEBUG("voice request handle");
         std::shared_ptr<QByteArray> voice = std::make_shared<QByteArray>(std::move(reply->readAll()));
         chat_dialog_->BotReply(robot_message_);
         LAppLive2DManager::GetInstance()->RobotControl((Csm::csmChar*)motion_.GetRawString(),(Csm::csmChar*)expression_.GetRawString(), voice);
@@ -78,19 +80,18 @@ bool NetworkManager::ReplyMessageProcess(const QByteArray &reply_data) {
     QJsonObject reply_message = choices["message"].toObject();
     QString content = reply_message["content"].toString();
     request_messages_->append(reply_message);
-    qDebug() << content;
+    CF_LOG_DEBUG("reply: %s", content.toUtf8().data());
     QJsonParseError jsonError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(content.toUtf8(), &jsonError);
     if (jsonError.error != QJsonParseError::NoError) {
-        qDebug() << "json error!" << jsonError.errorString();
+        CF_LOG_ERROR("json error! %s", jsonError.errorString().toUtf8().data());
         return false;
     }
     QJsonObject jsonObject = jsonDoc.object();
     robot_message_ = jsonObject[GPT_MESSAGE].toString();
     motion_ = jsonObject[GPT_MOTION].toString().toUtf8();
     expression_ = jsonObject[GPT_EXPRESSION].toString().toUtf8();
-    qDebug("motion: %s", motion_.GetRawString());
-    qDebug("expression: %s", expression_.GetRawString());
+    CF_LOG_INFO("motion: %s", motion_.GetRawString());
     return true;
 }
 
@@ -100,7 +101,7 @@ void NetworkManager::ClearMessages() {
     request_messages_ = new QJsonArray;
     QJsonObject request_message;
     request_message.insert("role", "system");
-    request_message.insert("content", SystemPrompt);
+    request_message.insert("content", resource_loader::get_instance().get_gpt_system_prompt());
     request_messages_->append(request_message);
 }
 

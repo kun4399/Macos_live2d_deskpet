@@ -6,7 +6,7 @@
 #include "message_queue.hpp"
 #include <thread>
 #include "resource_loader.hpp"
-#include "qf_log.h"
+#include "Log_util.h"
 #include <QApplication>
 
 // 发送给窗口的消息

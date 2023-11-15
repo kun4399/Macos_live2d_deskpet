@@ -15,6 +15,7 @@
 #include <Model/CubismMoc.hpp>
 #include "LAppDefine.hpp"
 #include <CoreFoundation/CoreFoundation.h>
+#include "Log_util.h"
 
 using std::endl;
 using namespace Csm;
@@ -40,9 +41,7 @@ csmByte *LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt *outSize) {
 
     file.open(path, std::ios::in | std::ios::binary);
     if (!file.is_open()) {
-        if (DebugLogEnable) {
-            PrintLog("file open error");
-        }
+        CF_LOG_ERROR("file open error");
         return NULL;
     }
     file.read(buf, size);

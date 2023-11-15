@@ -55,8 +55,8 @@ public:
 
     QString get_config_path() const;
 
-//    bool moveable();
-//    void set_moveable(bool m);
+    const QString &get_gpt_system_prompt() const;
+
     bool is_top() const;
 
     void set_top(bool top);
@@ -81,6 +81,7 @@ private:
     QString resource_file_path;
     QString gpt_api_url;
     QString gpt_api_key;
+    QString gpt_system_prompt;
     int current_model_index;
     QJsonObject root_;
 

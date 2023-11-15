@@ -2,7 +2,6 @@
 #include "event_handler.hpp"
 #include "resource_loader.hpp"
 #include <QApplication>
-#include <AppKit/NSApplication.h>
 #import "MouseEvent.h"
 //考虑使用macOS的语音控制功能（voice control）
 /// TODO 1. 添加动作表情控制
@@ -15,21 +14,21 @@
 
 int main(int argc, char *argv[]) {
     event_handler::get_instance();
-
+    QApplication a(argc, argv);
     if (!resource_loader::get_instance().initialize()) {
         return 0;
     }
-    QApplication a(argc, argv);
-    QSharedPointer<QAbstractNativeEventFilter> filter(new MyEventFilter);  // 创建自定义事件过滤器对象
+//    QSharedPointer<QAbstractNativeEventFilter> filter(new MyEventFilter);  // 创建自定义事件过滤器对象
 //    const int mask = NSLeftMouseDownMask | NSLeftMouseUpMask | NSMouseMovedMask | NSLeftMouseDragged;  // 设置需要监听的事件类型
-    const int mask = NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp | NSEventMaskMouseMoved;
-    id monitorId = [NSEvent addGlobalMonitorForEventsMatchingMask:mask handler:^(NSEvent *event) {
-        filter->nativeEventFilter("NSEvent", event, 0);
-    }];
-    a.installNativeEventFilter(filter.data());
+//    const int mask = NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp | NSEventMaskMouseMoved;
+//    id monitorId = [NSEvent addGlobalMonitorForEventsMatchingMask:mask handler:^(NSEvent *event) {
+//        filter->nativeEventFilter("NSEvent", event, 0);
+//    }];
+//    a.installNativeEventFilter(filter.data());
     MainWindow w(nullptr, &a);
     w.show();
+
     int x = QApplication::exec();
-    [NSEvent removeMonitor:monitorId];
+//    [NSEvent removeMonitor:monitorId];
     return x;
 }

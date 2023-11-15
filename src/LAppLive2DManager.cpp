@@ -26,7 +26,7 @@ namespace {
 
     void FinishedMotion(ACubismMotion* self)
     {
-        LAppPal::PrintLog("Motion Finished: %x", self);
+        CF_LOG_INFO("Motion Finished: %x", (char *)self);
     }
 }
 
@@ -61,7 +61,7 @@ LAppLive2DManager::LAppLive2DManager()
      QByteArray model_name= m->name.toUtf8();
      if(!ChangeScene((Csm::csmChar *) model_name.data()))
      {
-         LAppPal::PrintLog("current module load fail");
+         CF_LOG_ERROR("current module load fail");
          event_handler::get_instance().report<QString>(msg_queue::message_type::app_current_model_load_fail, nullptr);
      }
 }
@@ -75,7 +75,7 @@ void LAppLive2DManager::ReleaseAllModel()
 {
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
     {
-        delete _models[i];
+        delete _models[(int)i];
     }
 
     _models.Clear();
@@ -85,10 +85,10 @@ LAppModel* LAppLive2DManager::GetModel(csmUint32 no) const
 {
     if (no < _models.GetSize())
     {
-        return _models[no];
+        return _models[(int)no];
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void LAppLive2DManager::OnDrag(csmFloat32 x, csmFloat32 y) const
@@ -103,13 +103,10 @@ void LAppLive2DManager::OnDrag(csmFloat32 x, csmFloat32 y) const
 
 void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 {
-    if (DebugLogEnable)
-    {
-        LAppPal::PrintLog("[APP]tap point: {x:%.2f y:%.2f}", x, y);
-    }
+    CF_LOG_DEBUG("tap point: {x:%.2f y:%.2f}", x, y);
     if (_models.GetSize() != 1)
     {
-        LAppPal::PrintLog("[Error] model size is %d", _models.GetSize());
+        CF_LOG_ERROR("model size is not 1: %d", _models.GetSize());
         return;
     }
     Csm::csmInt32 hit_area = _models[0]->HitTest(x, y);
@@ -165,7 +162,7 @@ void LAppLive2DManager::OnUpdate() const
         }
 
         // 必要があればここで乗算
-        if (_viewMatrix != NULL)
+        if (_viewMatrix != nullptr)
         {
             projection.MultiplyByMatrix(_viewMatrix);
         }
@@ -190,10 +187,7 @@ void LAppLive2DManager::OnUpdate() const
 bool LAppLive2DManager::ChangeScene(Csm::csmChar* name)
 {
     //_sceneIndex = index;
-    if (DebugLogEnable)
-    {
-        LAppPal::PrintLog("[APP]model index: %s", name);
-    }
+    CF_LOG_DEBUG("model index: %s", name);
     char modelPath[128];
     char modelJsonName[128];
     snprintf(modelPath,128,"%s%s/",ResourcesPath,(char*)name);
@@ -254,11 +248,9 @@ void LAppLive2DManager::SetViewMatrix(CubismMatrix44* m)
 }
 
 void LAppLive2DManager::RobotControl(Csm::csmChar *motion_group, Csm::csmChar *expression, const std::shared_ptr<QByteArray>& sound) {
-    if (DebugLogEnable) {
-        qDebug() << "RobotControl: " << motion_group << " " << expression;
-    }
+    CF_LOG_DEBUG("motion: %s, expression: %s", motion_group, expression);
     if (_models.GetSize() != 1) {
-        LAppPal::PrintLog("[Error] model size is %d", _models.GetSize());
+        CF_LOG_ERROR("model size is %d", _models.GetSize());
         return;
     }
     if (expression != nullptr && _models[0]->ExpressionExists(expression)) {

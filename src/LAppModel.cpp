@@ -6,7 +6,6 @@
  */
 
 #include "LAppModel.hpp"
-#include <fstream>
 #include <vector>
 #include <CubismModelSettingJson.hpp>
 #include <Motion/CubismMotion.hpp>
@@ -19,24 +18,21 @@
 #include "LAppDefine.hpp"
 #include "LAppPal.hpp"
 #include "LAppTextureManager.hpp"
+#include "Log_util.h"
 #include "LAppDelegate.hpp"
-
+#define DRAG_SCALE 0.3f
 using namespace Live2D::Cubism::Framework;
 using namespace Live2D::Cubism::Framework::DefaultParameterId;
 using namespace LAppDefine;
 
 namespace {
     csmByte *CreateBuffer(const csmChar *path, csmSizeInt *size) {
-        if (DebugLogEnable) {
-            LAppPal::PrintLog("[APP]create buffer: %s ", path);
-        }
+        CF_LOG_DEBUG("create buffer: %s", path);
         return LAppPal::LoadFileAsBytes(path, size);
     }
 
     void DeleteBuffer(csmByte *buffer, const csmChar *path = "") {
-        if (DebugLogEnable) {
-            LAppPal::PrintLog("[APP]delete buffer: %s", path);
-        }
+        CF_LOG_DEBUG("delete buffer: %s", path);
         LAppPal::ReleaseBytes(buffer);
     }
 }
@@ -72,9 +68,7 @@ LAppModel::~LAppModel() {
 bool LAppModel::LoadAssets(const csmChar *dir, const csmChar *fileName) {
     _modelHomeDir = dir;
 
-    if (_debugMode) {
-        LAppPal::PrintLog("[APP]load model setting: %s", fileName);
-    }
+    CF_LOG_DEBUG("load model setting: %s", fileName);
 
     csmSizeInt size;
     const csmString path = csmString(dir) + fileName;
@@ -109,9 +103,7 @@ bool LAppModel::SetupModel(ICubismModelSetting *setting) {
         csmString path = _modelSetting->GetModelFileName();
         path = _modelHomeDir + path;
 
-        if (_debugMode) {
-            LAppPal::PrintLog("[APP]create model: %s", setting->GetModelFileName());
-        }
+        CF_LOG_DEBUG("create model: %s", path.GetRawString());
 
         buffer = CreateBuffer(path.GetRawString(), &size);
         if (buffer == nullptr) {
@@ -246,10 +238,7 @@ void LAppModel::PreloadMotionGroup(const csmChar *group) {
         csmString name = Utils::CubismString::GetFormatedString("%s_%d", group, i);
         csmString path = _modelSetting->GetMotionFileName(group, i);
         path = _modelHomeDir + path;
-
-        if (_debugMode) {
-            LAppPal::PrintLog("[APP]load motion: %s => [%s_%d] ", path.GetRawString(), group, i);
-        }
+        CF_LOG_DEBUG("load motion: %s => [%s_%d] ", path.GetRawString(), group, i);
 
         csmByte *buffer;
         csmSizeInt size;
@@ -348,20 +337,19 @@ void LAppModel::Update() {
     if (_expressionManager != nullptr) {
         _expressionManager->UpdateMotion(_model, deltaTimeSeconds); // 根据表情更新参数（相对变化）。
     }
-//    LAppPal::PrintLog("_dragX: %f", _dragX);
-//    LAppPal::PrintLog("_dragY: %f", _dragY);
+
     //拖动更改
     //通过拖动调整脸部朝向
-    _model->AddParameterValue(_idParamAngleX, _dragX * 30); // 加上-30到30的值。
-    _model->AddParameterValue(_idParamAngleY, _dragY * 30);
-    _model->AddParameterValue(_idParamAngleZ, _dragX * _dragY * -30);
+    _model->AddParameterValue(_idParamAngleX, _dragX , 30 * DRAG_SCALE); // 加上-30到30的值。
+    _model->AddParameterValue(_idParamAngleY, _dragY , 30 * DRAG_SCALE);
+    _model->AddParameterValue(_idParamAngleZ, _dragX , _dragY * -30 * DRAG_SCALE);
 
     //通过拖动调整身体方向
-    _model->AddParameterValue(_idParamBodyAngleX, _dragX * 10); // -10から10の値を加える
+    _model->AddParameterValue(_idParamBodyAngleX, _dragX , 10 *DRAG_SCALE); // -10から10の値を加える
 
     //通过拖动调整眼睛方向
-    _model->AddParameterValue(_idParamEyeBallX, _dragX); // -1から1の値を加える
-    _model->AddParameterValue(_idParamEyeBallY, _dragY);
+    _model->AddParameterValue(_idParamEyeBallX, _dragX,DRAG_SCALE); // -1から1の値を加える
+    _model->AddParameterValue(_idParamEyeBallY, _dragY,DRAG_SCALE);
 
     // 呼吸等
     if (_breath != nullptr) {
@@ -403,9 +391,7 @@ LAppModel::StartMotion(const Csm::csmChar *group, Csm::csmInt32 no, Csm::csmInt3
     if (priority == PriorityForce) {
         _motionManager->SetReservePriority(priority);
     } else if (!_motionManager->ReserveMotion(priority)) {
-        if (_debugMode) {
-            LAppPal::PrintLog("[APP]can't start motion.");
-        }
+        CF_LOG_DEBUG("can't start motion");
         return InvalidMotionQueueEntryHandleValue;
     }
 
@@ -445,19 +431,16 @@ LAppModel::StartMotion(const Csm::csmChar *group, Csm::csmInt32 no, Csm::csmInt3
 
     //voice
     csmString voice = _modelSetting->GetMotionSoundFileName(group, no);
-    if (strcmp(voice.GetRawString(), "") != 0) {
+    if (strcmp(voice.GetRawString(), "") != 0 && resource_loader::get_instance().tts_enable_) {
         csmString path = voice;
         path = _modelHomeDir + path;
         _wavFileHandler.Start(path);
-    } else if(sound)
+    } else if(sound && resource_loader::get_instance().tts_enable_)
     {
         _wavFileHandler.Start(sound);
 
     }
-
-    if (_debugMode) {
-        LAppPal::PrintLog("[APP]start motion: [%s_%d]", group, no);
-    }
+    CF_LOG_DEBUG("start motion: [%s_%d]", group, no);
     return _motionManager->StartMotionPriority(motion, autoDelete, priority);
 }
 
@@ -508,9 +491,7 @@ csmBool LAppModel::HitTest(const csmChar *hitAreaName, csmFloat32 x, csmFloat32 
 
 void LAppModel::SetExpression(const csmChar *expressionID) {
     ACubismMotion *motion = _expressions[expressionID];
-    if (_debugMode) {
-        LAppPal::PrintLog("[APP]expression: [%s]", expressionID);
-    }
+    CF_LOG_DEBUG("expression: [%s]", expressionID);
 
     if (motion != nullptr) {
         _expressionManager->StartMotionPriority(motion, false, PriorityForce); // 将表情设置为强制优先级（优先级最高）

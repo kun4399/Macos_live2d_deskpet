@@ -1,7 +1,7 @@
 ﻿#include "mainwindow.h"
 #include <QMenu>
 #include "./ui_mainwindow.h"
-#include "qf_log.h"
+#include "Log_util.h"
 #include "LAppLive2DManager.hpp"
 #include "resource_loader.hpp"
 #include "event_handler.hpp"
@@ -12,7 +12,6 @@
 #include "qactiongroup.h"
 #include <QMenuBar>
 #import "MouseEvent.h"
-#include "LAppDelegate.hpp"
 
 namespace {
     int pos_x;
@@ -86,6 +85,10 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
 
     a_exit = new QAction(m_menu);
     a_exit->setText(QStringLiteral("退出"));
+    a_voice = new QAction(m_menu);
+    a_voice->setText(QStringLiteral("语音"));
+    a_voice->setCheckable(true);
+    a_voice->setChecked(false);
 
     set_top = new QAction(m_menu);
     set_top->setText(QStringLiteral("置顶"));
@@ -97,6 +100,7 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     }
 
     m_menu->addAction(set_top);
+    m_menu->addAction(a_voice);
     m_menu->addMenu(m_change);
     m_menu->addMenu(m_move);
     m_menu->addMenu(m_dialog);
@@ -109,12 +113,16 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     m_systemTray->show();
     connect(m_systemTray, &QSystemTrayIcon::activated, this, &MainWindow::activeTray);
     connect(set_top, &QAction::triggered, this, &MainWindow::action_set_top);
+    connect(a_voice, &QAction::triggered, this, &MainWindow::action_voice);
     connect(a_exit, &QAction::triggered, this, &MainWindow::action_exit);
     connect(g_move, &QActionGroup::triggered, this, &MainWindow::action_move);
     connect(g_change, &QActionGroup::triggered, this, &MainWindow::action_change);
     connect(g_dialog, &QActionGroup::triggered, this, &MainWindow::action_dialog);
+    mouse_event_control = new MouseEventControl();
     event_handler::register_main_window(this);
-    MouseControl::enableMousePassThrough(this->winId(), true);
+    MouseEventControl::EnableMousePassThrough(this->winId(), true);
+    std::thread t(&MouseEventControl::startMonitoring, mouse_event_control);
+    t.detach();
 }
 
 void MainWindow::activeTray(QSystemTrayIcon::ActivationReason r) {
@@ -128,16 +136,17 @@ void MainWindow::activeTray(QSystemTrayIcon::ActivationReason r) {
 }
 
 void MainWindow::action_exit() {
-    QF_LOG_INFO("main_window exit");
+    CF_LOG_INFO("main_window exit");
     resource_loader::get_instance().release();
+    mouse_event_control->stopMonitoring();
     QApplication::exit(0);
 }
 
 void MainWindow::action_move(QAction *a) {
     if (a == this->move_on) {
-        QF_LOG_DEBUG("move on");
+        CF_LOG_DEBUG("move on");
 //        this->setWindowFlag(Qt::FramelessWindowHint, false);
-        MouseControl::enableMousePassThrough(this->winId(), false);
+        MouseEventControl::EnableMousePassThrough(this->winId(), false);
         this->m_change->setEnabled(false);
         this->a_exit->setEnabled(false);
         this->m_dialog->setEnabled(false);
@@ -146,9 +155,9 @@ void MainWindow::action_move(QAction *a) {
             dialog_window_->show();
         }
     } else if (a == this->move_off) {
-        QF_LOG_DEBUG("move off");
+        CF_LOG_DEBUG("move off");
         this->setWindowFlag(Qt::FramelessWindowHint, true);
-        MouseControl::enableMousePassThrough(this->winId(), true);
+        MouseEventControl::EnableMousePassThrough(this->winId(), true);
         this->m_change->setEnabled(true);
         this->a_exit->setEnabled(true);
         this->m_dialog->setEnabled(true);
@@ -161,7 +170,6 @@ void MainWindow::action_move(QAction *a) {
         }
         model.update_current_model_position(this->x(), this->y());
         model.update_current_model_size(this->width(), this->height());
-
     }
     this->show();
 
@@ -221,9 +229,7 @@ void MainWindow::action_change(QAction *a) {
             this->move(cxScreen / 2 - 320, cyScreen / 2 - 240);
             this->show();
             QMessageBox::critical(this, tr("QF"), QStringLiteral("资源文件错误,程序终止"));
-            QF_LOG_INFO("app exit");
-            resource_loader::get_instance().release();
-            QApplication::exit(0);
+            action_exit();
         }
     }
 }
@@ -233,9 +239,8 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::closeEvent(QCloseEvent *) {
-    QF_LOG_INFO("app exit");
-    resource_loader::get_instance().release();
-    QApplication::exit(0);
+    CF_LOG_INFO("app exit");
+    action_exit();
 }
 
 void MainWindow::customEvent(QEvent *e) {
@@ -243,9 +248,8 @@ void MainWindow::customEvent(QEvent *e) {
     switch (event->e) {
         case QfQevent::event_type::no_modle:
             QMessageBox::critical(this, tr("QF"), tr(event->why));
-            QF_LOG_INFO("app exit");
-            resource_loader::get_instance().release();
-            QApplication::exit(0);
+            CF_LOG_ERROR("no model");
+            action_exit();
             break;
         case QfQevent::event_type::load_default_model: {
             int index = resource_loader::get_instance().get_current_model_index();
@@ -275,9 +279,7 @@ void MainWindow::customEvent(QEvent *e) {
                 this->move(cxScreen / 2 - 320, cyScreen / 2 - 240);
                 this->show();
                 QMessageBox::critical(this, tr("QF"), QStringLiteral("资源文件错误,程序终止"));
-                QF_LOG_INFO("app exit");
-                resource_loader::get_instance().release();
-                QApplication::exit(0);
+                action_exit();
             }
             break;
         }
@@ -296,7 +298,7 @@ void MainWindow::action_set_top() {
             dialog_window_->setWindowFlag(Qt::WindowStaysOnTopHint, false);
         }
         this->show();
-        MouseControl::enableMousePassThrough(this->winId(), true);
+        MouseEventControl::EnableMousePassThrough(this->winId(), true);
         if (dialog_window_->isVisible()) {
             dialog_window_->show();
         }
@@ -328,5 +330,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event) {
         pos_x = x;
         pos_y = y;
         this->setCursor(Qt::SizeAllCursor);
+    }
+}
+
+void MainWindow::action_voice() {
+    if (a_voice->isChecked()) {
+        resource_loader::get_instance().tts_enable_ = true;
+    } else {
+        resource_loader::get_instance().tts_enable_ = false;
     }
 }

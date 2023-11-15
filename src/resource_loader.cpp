@@ -1,4 +1,4 @@
-﻿#include "qf_log.h"
+﻿#include "Log_util.h"
 #include "resource_loader.hpp"
 #include "event_handler.hpp"
 
@@ -10,15 +10,17 @@ namespace {
 
 bool resource_loader::initialize() {
     if (is_init) {
-        QF_LOG_ERROR("initialize finished");
+        CF_LOG_ERROR("initialize has finished");
         return true;
     }
-//    QDir currentDir = QDir::current();
-//    qDebug() << "Current Path: " << currentDir.absolutePath();
     resource_file_path = QString(Resources_FILE_PATH);
+//    QStringList path_list = QCoreApplication::applicationDirPath().split("/");
+//    path_list.removeLast();
+//    resource_file_path = path_list.join("/").append("/Resources");
     QFile file(resource_file_path + "/config.json");
+
     if (!file.open(QIODevice::ReadOnly)) {
-        QF_LOG_ERROR("open config.json failed, path:%s", resource_file_path.toStdString().c_str());
+        CF_LOG_ERROR("open config.json failed, path:%s", (resource_file_path + "/config.json").toStdString().c_str());
         return false;
     }
     QByteArray data = file.readAll();
@@ -26,7 +28,7 @@ bool resource_loader::initialize() {
     QJsonParseError json_error;
     QJsonDocument json_doc(QJsonDocument::fromJson(data, &json_error));
     if (json_error.error != QJsonParseError::NoError) {
-        QF_LOG_ERROR("parse json failed, error:%s", json_error.errorString().toStdString().c_str());
+        CF_LOG_ERROR("parse json failed, error:%s", json_error.errorString().toStdString().c_str());
         return false;
     }
     root_ = json_doc.object();
@@ -35,14 +37,14 @@ bool resource_loader::initialize() {
         system_tray_icon_path = system_tray.toString();
     } else {
         system_tray_icon_path = "/Qf.PNG";
-        QF_LOG_ERROR("system tray is not defined, use default icon");
+        CF_LOG_ERROR("system tray is not defined, use default icon");
     }
 
     QJsonValue module = root_.value("module");
     if (module.isArray()) {
         // 加载模型
         QJsonArray module_array = std::move(module.toArray());
-        for (auto && i : module_array) {
+        for (auto &&i: module_array) {
             QJsonValue model_value = i;
             if (model_value.isObject()) {
                 QJsonObject model_object = model_value.toObject();
@@ -56,24 +58,24 @@ bool resource_loader::initialize() {
                     tmp_model.model_height = height.toInt();
                     model_list.push_back(tmp_model);
                 } else {
-                    QF_LOG_ERROR("model format error: name:%s, width:%s, height:%s",
+                    CF_LOG_ERROR("model format error: name:%s, width:%s, height:%s",
                                  name_value.toString().toStdString().c_str(),
                                  width.toString().toStdString().c_str(),
                                  height.toString().toStdString().c_str());
                     return false;
                 }
             } else {
-                QF_LOG_ERROR("model format error: model json format error");
+                CF_LOG_ERROR("model format error: model json format error");
                 return false;
             }
         }
     } else {
-        QF_LOG_ERROR("module format error: module json is not array");
+        CF_LOG_ERROR("module format error: module json is not array");
         return false;
     }
 
     if (model_list.empty()) {
-        QF_LOG_ERROR("module format error: module array is empty");
+        CF_LOG_ERROR("module format error: module array is empty");
         return false;
     }
 
@@ -122,7 +124,7 @@ bool resource_loader::initialize() {
             dialog_height = dialog_height_value.toInt();
         }
     } else {
-        QF_LOG_ERROR("userdata format error: userdata is not json object");
+        CF_LOG_ERROR("userdata format error: userdata is not json object");
         return false;
     }
     QJsonValue gpt_api = root_.value("azure_api");
@@ -132,19 +134,26 @@ bool resource_loader::initialize() {
         if (gpt_api_url_value.isString()) {
             gpt_api_url = std::move(gpt_api_url_value.toString());
         } else {
-            QF_LOG_INFO("azure_api_url is not defined");
+            CF_LOG_INFO("azure_api_url is not defined");
         }
         QJsonValue gpt_api_key_value = gpt_api_object.value("key");
         if (gpt_api_key_value.isString()) {
             gpt_api_key = std::move(gpt_api_key_value.toString());
         } else {
-            QF_LOG_INFO("azure_api_key is not defined");
+            CF_LOG_INFO("azure_api_key is not defined");
+        }
+        QJsonValue gpt_system_prompt_value = gpt_api_object.value("system_prompt");
+        if (gpt_system_prompt_value.isString()) {
+            gpt_system_prompt = std::move(gpt_system_prompt_value.toString());
+        } else {
+            gpt_system_prompt="你的回复要包括三个参数：expression（无可选值），motion（可选 Idle），message,需要json格式回复,无有特殊符号。简洁的回答";
+            CF_LOG_INFO("system_prompt is not defined");
         }
         if (!gpt_api_url.isEmpty() && !gpt_api_key.isEmpty()) {
             gpt_enable_ = true;
         }
     } else {
-        QF_LOG_INFO("azure_api is not defined");
+        CF_LOG_INFO("azure_api is not defined");
     }
     is_init = true;
     return true;
@@ -184,11 +193,11 @@ bool resource_loader::update_dialog_size(int width, int height) {
     return true;
 }
 
-bool resource_loader::save_config()  {
+bool resource_loader::save_config() {
     if (!is_init || !config_change) { return true; }
     config_change = false;
-    QF_LOG_DEBUG("start to save config");
-    auto * root = new QJsonObject();
+    CF_LOG_DEBUG("start to save config");
+    auto *root = new QJsonObject();
     root->insert("systemtray", system_tray_icon_path);
     QJsonArray module_array;
     for (const auto &item: model_list) {
@@ -212,10 +221,11 @@ bool resource_loader::save_config()  {
     QJsonObject azure_api_object;
     azure_api_object.insert("url", gpt_api_url);
     azure_api_object.insert("key", gpt_api_key);
+    azure_api_object.insert("system_prompt", gpt_system_prompt);
     root->insert("azure_api", azure_api_object);
-    auto result = event_handler::get_instance().report<QJsonObject>(msg_queue::message_type::app_config_save,root);
+    auto result = event_handler::get_instance().report<QJsonObject>(msg_queue::message_type::app_config_save, root);
     if (result != msg_queue::status::success) {
-        QF_LOG_ERROR("save config failed, error:%d", result);
+        CF_LOG_ERROR("save config failed, error:%d", result);
         return false;
     }
     return true;
@@ -237,7 +247,7 @@ const QVector<resource_loader::model> &resource_loader::get_model_list() {
 }
 
 QString resource_loader::get_system_tray_icon_path() {
-    return resource_file_path +"/"+ system_tray_icon_path;
+    return resource_file_path + "/" + system_tray_icon_path;
 }
 
 const resource_loader::model *resource_loader::get_current_model() {
@@ -252,6 +262,7 @@ bool resource_loader::update_current_model(QString name) {
     for (uint32_t i = 0; i < model_list.size(); i++) {
         if (name == model_list[i].name) {
             current_model_index = i;
+            config_change = true;
             return true;
         }
     }
@@ -261,6 +272,7 @@ bool resource_loader::update_current_model(QString name) {
 bool resource_loader::update_current_model(uint32_t index) {
     if (index < model_list.size()) {
         current_model_index = (int) index;
+        config_change = true;
         return true;
     }
     return false;
@@ -282,10 +294,14 @@ QString resource_loader::get_config_path() const {
     return resource_file_path + "/config.json";
 }
 
-const QString& resource_loader::get_gpt_url() const {
+const QString &resource_loader::get_gpt_url() const {
     return gpt_api_url;
 }
 
-const QString& resource_loader::get_gpt_key() const {
+const QString &resource_loader::get_gpt_key() const {
     return gpt_api_key;
+}
+
+const QString &resource_loader::get_gpt_system_prompt() const {
+    return gpt_system_prompt;
 }

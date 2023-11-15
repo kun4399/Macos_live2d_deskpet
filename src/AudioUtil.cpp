@@ -2,12 +2,12 @@
 // Created by 高煜焜 on 2023/11/4.
 //
 # include "AudioUtil.h"
-
+#include "Log_util.h"
 
 
 auto AudioPlayer::PlayAudio(const QByteArray &source, int sample_rate, int channel_count,
                             QAudioFormat::SampleFormat sample_format) -> void {
-    qDebug() << "AudioPlayer::PlayAudio : start";
+    CF_LOG_INFO("play tts audio");
     QAudioFormat format;
     format.setSampleRate(sample_rate);
     format.setChannelCount(channel_count);
@@ -21,4 +21,11 @@ auto AudioPlayer::PlayAudio(const QByteArray &source, int sample_rate, int chann
 
 AudioPlayer::~AudioPlayer() {
 
+}
+
+auto AudioPlayer::PlayAudio(const QString &source) -> void {
+    CF_LOG_INFO("play local audio");
+    auto *player = new QMediaPlayer(this);
+    player->setSource(QUrl::fromLocalFile(source));
+    player->play();
 }

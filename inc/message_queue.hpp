@@ -3,7 +3,7 @@
 
 #include <mutex>
 #include "queue"
-#include "qf_log.h"
+#include "Log_util.h"
 
 class msg_queue {
 public:
@@ -51,7 +51,7 @@ public:
 
         ~msg_guard() {
             if (data_ != nullptr) {
-                QF_LOG_DEBUG("msg guard delete data");
+                CF_LOG_DEBUG("msg guard delete data");
                 delete data_;
             }
         }

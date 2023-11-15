@@ -46,12 +46,12 @@ void CubismTargetPoint::Update(csmFloat32 deltaTimeSeconds)
     const csmFloat32  deltaTimeWeight = (_userTimeSeconds - _lastTimeSeconds) * static_cast<csmFloat32>(FrameRate);
     _lastTimeSeconds = _userTimeSeconds;
 
-    // 最高速度になるまでの時間を
+    // 达到最高速度所需的时间
     const csmFloat32 TimeToMaxSpeed = 0.15f;
     const csmFloat32 FrameToMaxSpeed = TimeToMaxSpeed * static_cast<csmFloat32>(FrameRate);     // sec * frame/sec
     const csmFloat32 MaxA = deltaTimeWeight * MaxV / FrameToMaxSpeed;                           // 1frameあたりの加速度
 
-    // 目指す向きは、(dx, dy)方向のベクトルとなる
+    // 目标方向是(dx, dy)方向的向量。
     const csmFloat32 dx = _faceTargetX - _faceX;
     const csmFloat32 dy = _faceTargetY - _faceY;
 

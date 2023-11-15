@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstdint>
 #include "LAppPal.hpp"
+#include "Log_util.h"
 
 LAppWavFileHandler::LAppWavFileHandler()
         : _pcmData(nullptr), _userTimeSeconds(0.0f), _lastRms(0.0f), _sampleOffset(0) {
@@ -57,11 +58,6 @@ Csm::csmBool LAppWavFileHandler::Update(Csm::csmFloat32 deltaTimeSeconds) {
 
 void LAppWavFileHandler::Start(const Csm::csmString &filePath) {
 
-    //加载WAV文件，如果这个没成功似乎就不会有嘴形同步
-//    if (!LoadWavFile(filePath))
-//    {
-//        return;
-//    }
     LoadWavFile(filePath);
     // 初始化样例参照位置
     _sampleOffset = 0;
@@ -69,11 +65,7 @@ void LAppWavFileHandler::Start(const Csm::csmString &filePath) {
 
     // RMS値をリセット
     _lastRms = 0.0f;
-
-    //调用系统播放音频
-    std::string stdfilePath(filePath.GetRawString());
-    std::string command = "afplay \"" + stdfilePath + "\" &";
-    system(command.c_str());
+    _audioPlayer->PlayAudio(filePath.GetRawString());
 }
 
 Csm::csmFloat32 LAppWavFileHandler::GetRms() const {
@@ -129,7 +121,7 @@ Csm::csmBool LAppWavFileHandler::LoadWavFile(const Csm::csmString &filePath, std
         _typeID = _byteReader.Get16LittleEndian();
         if (_typeID != 1 && _typeID != 3) {
             ret = false;
-            LAppPal::PrintLog("Unsupported wav file type ID : %d", _typeID);
+            CF_LOG_ERROR("Unsupported wav file type ID : %d", _typeID);
             break;
         }
         // 频道数量
@@ -231,7 +223,7 @@ void LAppWavFileHandler::ReleasePcmData() {
 
 void LAppWavFileHandler::Start(std::shared_ptr<QByteArray> &sound) {
     if (!LoadWavFile("", sound)) {
-        qDebug() << "LappWavFileHandler::Start:LoadWavFile failed";
+        CF_LOG_ERROR("LoadWavFile failed, no sound data");
         return;
     }
     sound->remove(0,_wavFileInfo._dataOffset);

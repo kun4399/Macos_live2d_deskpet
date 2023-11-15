@@ -21,7 +21,6 @@
 #include "resource_loader.hpp"
 #include "LAppLive2DManager.hpp"
 
-#define SystemPrompt "你的回复要包括三个参数：expression（无可选值），motion（可选 Idle），message,需要json格式回复,无有特殊符号。简洁的回答"
 #define VoiceAPI "https://genshinvoice.top/api"
 #define GPT_MESSAGE "message"
 #define GPT_MOTION "motion"
