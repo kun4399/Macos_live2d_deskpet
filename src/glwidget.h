@@ -13,7 +13,6 @@ public:
     explicit GLWidget(QWidget *parent = nullptr);
 
     ~GLWidget() override;
-
 protected:
     void initializeGL() override;
 

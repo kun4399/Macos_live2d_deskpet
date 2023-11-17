@@ -254,10 +254,16 @@ void LAppLive2DManager::RobotControl(Csm::csmChar *motion_group, Csm::csmChar *e
         return;
     }
     if (expression != nullptr && _models[0]->ExpressionExists(expression)) {
+        CF_LOG_DEBUG("expression : %s start", expression);
         _models[0]->SetExpression(expression);
     }
     if (motion_group != nullptr && _models[0]->MotionGroupExists(motion_group)) {
-        qDebug() << "RobotControl: " << motion_group << "start";
+        CF_LOG_DEBUG("motion : %s start", motion_group);
         _models[0]->StartMotion(motion_group, 0, PriorityForce, FinishedMotion, sound);
+    }
+    else if (sound)
+    {
+        CF_LOG_DEBUG("motion : Idle start");
+        _models[0]->StartMotion("Idle", 0, PriorityForce, FinishedMotion, sound);
     }
 }

@@ -10,11 +10,12 @@
 #include <CubismFramework.hpp>
 #include <Utils/CubismString.hpp>
 #include "QByteArray"
-#include "AudioUtil.h"
+#include "event_handler.hpp"
  /**
   * @brief wavファイルハンドラ
   * @attention 16bit wav ファイル読み込みのみ実装済み
   */
+  class AudioPlayer;
 class LAppWavFileHandler {
 public:
     /**

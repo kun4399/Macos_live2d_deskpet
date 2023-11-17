@@ -6,7 +6,7 @@
 #ifdef CF_DEBUG
 #define CF_LOG_DEBUG(fmt, ...) qDebug("[%s,%d] DEBUG:" fmt "\n",__PRETTY_FUNCTION__,__LINE__,##__VA_ARGS__)
 #else
-#define QF_LOG_DEBUG(fmt, ...)
+#define CF_LOG_DEBUG(fmt, ...)
 #endif
 
 #define CF_LOG_INFO(fmt, ...) qDebug("[%s,%d] INFO:" fmt "\n",__PRETTY_FUNCTION__,__LINE__,##__VA_ARGS__)

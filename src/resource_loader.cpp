@@ -1,8 +1,6 @@
 ﻿#include "Log_util.h"
 #include "resource_loader.hpp"
 #include "event_handler.hpp"
-
-
 #define  Resources_FILE_PATH  "/Users/gaoyukun/github/qf/Resources"
 namespace {
     constexpr int config_file_size = 4096;

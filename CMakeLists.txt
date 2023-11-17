@@ -17,7 +17,7 @@ set(BUILD_UTILS OFF CACHE BOOL "" FORCE)
 find_package(Qt6 COMPONENTS Widgets OpenGL REQUIRED)
 
 find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets)
-find_package(Qt6 COMPONENTS Multimedia REQUIRED) # 添加qt多媒体模块
+#find_package(Qt6 COMPONENTS Multimedia REQUIRED) # 添加qt多媒体模块
 find_package(Qt6 COMPONENTS Network REQUIRED) # 添加qt网络模块
 #find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)
 #
@@ -55,7 +55,7 @@ aux_source_directory(src QF_SOURCES_FILE)
 add_executable(ChatFriend)
 add_subdirectory(src)
 set_target_properties(ChatFriend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-target_link_libraries(ChatFriend PRIVATE Qt6::Widgets Qt6::OpenGL glew_s Framework Qt6::OpenGLWidgets "-framework Cocoa" glfw Qt6::Multimedia Qt6::Network )
+target_link_libraries(ChatFriend PRIVATE Qt6::Widgets Qt6::OpenGL glew_s Framework Qt6::OpenGLWidgets "-framework Cocoa -framework AVFoundation" glfw Qt6::Network )
 # 设置编译选项，使得 Qt 库以静态链接方式链接
 #target_compile_options(ChatFriend PRIVATE -static-libgcc -static-libstdc++)\
 #打包

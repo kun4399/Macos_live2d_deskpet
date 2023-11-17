@@ -3,7 +3,7 @@ target_sources(ChatFriend
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppDelegate.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/LAppWavFileHandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/LAppWavFileHandler.mm
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppLive2DManager.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppModel.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppPal.cpp
@@ -22,7 +22,7 @@ target_sources(ChatFriend
       ${CMAKE_CURRENT_SOURCE_DIR}/resource_loader.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/AudioUtil.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/AudioUtil.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/AudioUtil.mm
         ${CMAKE_CURRENT_SOURCE_DIR}/Networkutil.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Networkutil.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ChatDialog.h

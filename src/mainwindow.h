@@ -5,7 +5,7 @@
 #include <qaction.h>
 #include "ChatDialog.h"
 
-class MouseEventControl;
+class MouseEventHandle;
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -71,7 +71,7 @@ private:
     QApplication *app;
     ChatDialog *dialog_window_;
     static MainWindow *instance;
-    MouseEventControl *mouse_event_control;
+    MouseEventHandle *mouse_event_;
 
 };
 

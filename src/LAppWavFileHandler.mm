@@ -10,6 +10,7 @@
 #include <cstdint>
 #include "LAppPal.hpp"
 #include "Log_util.h"
+#include "AudioUtil.h"
 
 LAppWavFileHandler::LAppWavFileHandler()
         : _pcmData(nullptr), _userTimeSeconds(0.0f), _lastRms(0.0f), _sampleOffset(0) {
@@ -65,7 +66,7 @@ void LAppWavFileHandler::Start(const Csm::csmString &filePath) {
 
     // RMS値をリセット
     _lastRms = 0.0f;
-    _audioPlayer->PlayAudio(filePath.GetRawString());
+    _audioPlayer->playAudio(filePath.GetRawString());
 }
 
 Csm::csmFloat32 LAppWavFileHandler::GetRms() const {
@@ -179,7 +180,7 @@ Csm::csmBool LAppWavFileHandler::LoadWavFile(const Csm::csmString &filePath, std
     }
     _byteReader._fileByte = nullptr;
     _byteReader._fileSize = 0;
-
+    CF_LOG_DEBUG("波形数据获取成功");
     return ret;
 }
 
@@ -226,23 +227,6 @@ void LAppWavFileHandler::Start(std::shared_ptr<QByteArray> &sound) {
         CF_LOG_ERROR("LoadWavFile failed, no sound data");
         return;
     }
-    sound->remove(0,_wavFileInfo._dataOffset);
-    if(_typeID ==1)
-    {
-        switch (_wavFileInfo._bitsPerSample) {
-            case 8:
-                _audioPlayer->PlayAudio(*sound,_wavFileInfo._samplingRate,_wavFileInfo._numberOfChannels,QAudioFormat::SampleFormat::UInt8);
-                break;
-            case 16:
-                _audioPlayer->PlayAudio(*sound,_wavFileInfo._samplingRate,_wavFileInfo._numberOfChannels,QAudioFormat::SampleFormat::Int16);
-                break;
-            case 32:
-                _audioPlayer->PlayAudio(*sound,_wavFileInfo._samplingRate,_wavFileInfo._numberOfChannels,QAudioFormat::SampleFormat::Int32);
-                break;
-        }
-    }
-    else if(_typeID ==3)
-    {
-        _audioPlayer->PlayAudio(*sound,_wavFileInfo._samplingRate,_wavFileInfo._numberOfChannels,QAudioFormat::SampleFormat::Float);
-    }
+    _audioPlayer->playAudio((char *)sound->data(),sound->size());
+
 }

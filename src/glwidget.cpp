@@ -2,7 +2,6 @@
 #include <QtGui>
 #include "LAppDelegate.hpp"
 #include "glwidget.h"
-#include "resource_loader.hpp"
 #include <QApplication>
 #include "QtOpenGLWidgets/QOpenGLWidget"
 

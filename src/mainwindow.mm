@@ -11,7 +11,7 @@
 #include "qaction.h"
 #include "qactiongroup.h"
 #include <QMenuBar>
-#import "MouseEvent.h"
+#import "MouseEvent.h" // 这个文件头不能放到mainwindow.h中，否则会报错
 
 namespace {
     int pos_x;
@@ -118,11 +118,11 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     connect(g_move, &QActionGroup::triggered, this, &MainWindow::action_move);
     connect(g_change, &QActionGroup::triggered, this, &MainWindow::action_change);
     connect(g_dialog, &QActionGroup::triggered, this, &MainWindow::action_dialog);
-    mouse_event_control = new MouseEventControl();
+    mouse_event_ = new MouseEventHandle();
     event_handler::register_main_window(this);
-    MouseEventControl::EnableMousePassThrough(this->winId(), true);
-    std::thread t(&MouseEventControl::startMonitoring, mouse_event_control);
-    t.detach();
+    MouseEventHandle::EnableMousePassThrough(this->winId(), true);
+        std::thread t(&MouseEventHandle::startMonitoring, mouse_event_);
+        t.detach();
 }
 
 void MainWindow::activeTray(QSystemTrayIcon::ActivationReason r) {
@@ -138,7 +138,7 @@ void MainWindow::activeTray(QSystemTrayIcon::ActivationReason r) {
 void MainWindow::action_exit() {
     CF_LOG_INFO("main_window exit");
     resource_loader::get_instance().release();
-    mouse_event_control->stopMonitoring();
+    mouse_event_->stopMonitoring();
     QApplication::exit(0);
 }
 
@@ -146,7 +146,7 @@ void MainWindow::action_move(QAction *a) {
     if (a == this->move_on) {
         CF_LOG_DEBUG("move on");
 //        this->setWindowFlag(Qt::FramelessWindowHint, false);
-        MouseEventControl::EnableMousePassThrough(this->winId(), false);
+        MouseEventHandle::EnableMousePassThrough(this->winId(), false);
         this->m_change->setEnabled(false);
         this->a_exit->setEnabled(false);
         this->m_dialog->setEnabled(false);
@@ -157,7 +157,7 @@ void MainWindow::action_move(QAction *a) {
     } else if (a == this->move_off) {
         CF_LOG_DEBUG("move off");
         this->setWindowFlag(Qt::FramelessWindowHint, true);
-        MouseEventControl::EnableMousePassThrough(this->winId(), true);
+        MouseEventHandle::EnableMousePassThrough(this->winId(), true);
         this->m_change->setEnabled(true);
         this->a_exit->setEnabled(true);
         this->m_dialog->setEnabled(true);
@@ -298,7 +298,7 @@ void MainWindow::action_set_top() {
             dialog_window_->setWindowFlag(Qt::WindowStaysOnTopHint, false);
         }
         this->show();
-        MouseEventControl::EnableMousePassThrough(this->winId(), true);
+        MouseEventHandle::EnableMousePassThrough(this->winId(), true);
         if (dialog_window_->isVisible()) {
             dialog_window_->show();
         }
@@ -324,8 +324,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *) {
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
     Q_UNUSED(event)
     if (this->mouse_press) {
-        int x = event->globalPosition().x();
-        int y = event->globalPosition().y();
+        int x = (int) event->globalPosition().x();
+        int y = (int) event->globalPosition().y();
         this->move(this->x() + x - pos_x, this->y() + y - pos_y);
         pos_x = x;
         pos_y = y;

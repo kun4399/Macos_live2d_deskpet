@@ -1,8 +1,7 @@
 ﻿#include "event_handler.hpp"
-namespace {
 
+namespace {
     const QEvent::Type mtype = (QEvent::Type) QEvent::registerEventType();
-    QMainWindow *qmw;
 }
 msg_queue event_handler::mq(8);
 
@@ -16,6 +15,7 @@ event_handler &event_handler::get_instance() {
     return handler;
 }
 
+QMainWindow *event_handler::qmw = nullptr;
 
 event_handler::event_handler() : handle_thread(&event_handler::handle_task) {
     CF_LOG_DEBUG("event handler init");

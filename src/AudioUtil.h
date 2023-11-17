@@ -5,25 +5,19 @@
 #ifndef QUIETFRIEND_AUDIOUTIL_H
 #define QUIETFRIEND_AUDIOUTIL_H
 
-#include <QCoreApplication>
-#include <QBuffer>
-#include <QMediaPlayer>
-#include <QAudioFormat>
-#include <QAudioDevice>
-#include <QSoundEffect>
-#include "QMediaDevices"
-#include "QAudioSink"
-class AudioPlayer : public QObject {
-Q_OBJECT
+#include "Log_util.h"
+#import <AVFoundation/AVFoundation.h>
+class AudioPlayer {
 
 public:
-    AudioPlayer()= default;
+    AudioPlayer();
 
-    ~AudioPlayer() override ;
+    ~AudioPlayer();
+    void playAudio(const char *filePath);
 
-    auto PlayAudio(const QByteArray &source,int sample_rate,int channel_count,QAudioFormat::SampleFormat sample_format) -> void;
-
-    auto PlayAudio(const QString &source) -> void;
+    void playAudio(const char *audioData, size_t dataSize);
+private:
+    AVAudioPlayer *audioPlayer;
 
 };
 

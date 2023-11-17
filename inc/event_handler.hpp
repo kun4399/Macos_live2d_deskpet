@@ -31,7 +31,7 @@ public:
     static event_handler &get_instance();
 
     template<typename T>
-    msg_queue::status report(msg_queue::message_type e, T* data);
+    msg_queue::status report(msg_queue::message_type e, T *data);
 
     void release();
 
@@ -42,6 +42,7 @@ public:
 private:
     static msg_queue mq;
     std::thread handle_thread;
+    static QMainWindow *qmw;
 
     event_handler();
 
@@ -49,7 +50,7 @@ private:
 };
 
 template<typename T>
-msg_queue::status event_handler::report(msg_queue::message_type e, T* data) {
+msg_queue::status event_handler::report(msg_queue::message_type e, T *data) {
     return mq.post<T>(e, data);
 }
 

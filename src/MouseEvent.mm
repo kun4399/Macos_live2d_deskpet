@@ -1,9 +1,10 @@
 //#include <GL/glew.h> // 这个必须要放在这里的第一行，否则会报错
 #import "MouseEvent.h"
+#import <Cocoa/Cocoa.h>
 #include "LAppDelegate.hpp"
 #include "Log_util.h"
 
-void MouseEventControl::EnableMousePassThrough(WId windowId, bool enable) {
+void MouseEventHandle::EnableMousePassThrough(WId windowId, bool enable) {
     auto qtNSView = reinterpret_cast<NSView *> (windowId);
     auto window = [qtNSView window];
     if (enable) {
@@ -13,21 +14,21 @@ void MouseEventControl::EnableMousePassThrough(WId windowId, bool enable) {
     }
 }
 
-bool MouseEventControl::startMonitoring() {
+void MouseEventHandle::startMonitoring() {
     // 创建事件源
     ref = CFRunLoopGetCurrent();
     // 设置事件掩码，这里监听左键按下、左键释放、左键拖拽事件
-    CGEventMask eventMask = CGEventMaskBit( kCGEventLeftMouseDragged) | CGEventMaskBit(kCGEventLeftMouseDown) |
+    CGEventMask eventMask = CGEventMaskBit(kCGEventLeftMouseDragged) | CGEventMaskBit(kCGEventLeftMouseDown) |
                             CGEventMaskBit(kCGEventLeftMouseUp);
     // 创建事件监听器
     eventTap = CGEventTapCreate(
-            kCGSessionEventTap, kCGHeadInsertEventTap,kCGEventTapOptionListenOnly,
+            kCGSessionEventTap, kCGHeadInsertEventTap, kCGEventTapOptionListenOnly,
             eventMask, mouseEventCallback, this);
     if (!eventTap) {
         CF_LOG_ERROR("failed to create event tap");
-        return false;
+        return ;
     }
-    CF_LOG_DEBUG("start monitoring");
+    CF_LOG_INFO("start mouse event monitoring");
     is_monitoring = true;
     // 将事件监听器添加到当前线程的runloop中
     CFRunLoopSourceRef source =
@@ -40,18 +41,17 @@ bool MouseEventControl::startMonitoring() {
     CFRunLoopRemoveSource(ref, source, kCFRunLoopCommonModes);
     CFRelease(source);
     CFRelease(eventTap);
-    CF_LOG_DEBUG("moues event thread exit, end monitoring");
-    return true;
+    CF_LOG_INFO("moues event thread exit, end monitoring");
 }
 
 CGEventRef
-MouseEventControl::mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
-    auto *observer = static_cast<MouseEventControl *>(refcon);
+MouseEventHandle::mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
+    auto *observer = static_cast<MouseEventHandle *>(refcon);
     return observer->handleMouseEvent(type, event);
 }
 
-CGEventRef MouseEventControl::handleMouseEvent(CGEventType type, CGEventRef event) {
-    CF_LOG_DEBUG("mouse event type: %d", type);
+CGEventRef MouseEventHandle::handleMouseEvent(CGEventType type, CGEventRef event) {
+//    CF_LOG_DEBUG("mouse event type: %d", type);
     NSPoint mouseLocation = [NSEvent mouseLocation];
     auto &resource = resource_loader::get_instance();
     int x = (int) mouseLocation.x - resource.current_model_x;
@@ -60,11 +60,11 @@ CGEventRef MouseEventControl::handleMouseEvent(CGEventType type, CGEventRef even
     switch (type) {
         case kCGEventLeftMouseDown:
             LAppDelegate::GetInstance()->mousePressEvent(x, y);
-            CF_LOG_DEBUG("Left Mouse Down!");
+//            CF_LOG_DEBUG("Left Mouse Down!");
             break;
         case kCGEventLeftMouseUp:
             LAppDelegate::GetInstance()->mouseReleaseEvent(x, y);
-            CF_LOG_DEBUG("Left Mouse Up!");
+//            CF_LOG_DEBUG("Left Mouse Up!");
             break;
         case kCGEventLeftMouseDragged:
             LAppDelegate::GetInstance()->mouseMoveEvent(x, y);
@@ -74,10 +74,10 @@ CGEventRef MouseEventControl::handleMouseEvent(CGEventType type, CGEventRef even
     return event;
 }
 
-MouseEventControl::MouseEventControl(QObject *parent) : QObject(parent) {
+MouseEventHandle::MouseEventHandle(QObject *parent) : QObject(parent) {
 }
 
-bool MouseEventControl::stopMonitoring() {
+bool MouseEventHandle::stopMonitoring() {
     if (!is_monitoring) {
         return false;
     }
@@ -85,6 +85,3 @@ bool MouseEventControl::stopMonitoring() {
     CFRunLoopStop(ref);
     return true;
 }
-
-
-

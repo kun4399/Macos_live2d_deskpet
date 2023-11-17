@@ -53,6 +53,7 @@ bool NetworkManager::handleNetworkReply(QNetworkReply *reply) {
     if (reply->url().toString() == resource_loader::get_instance().get_gpt_url()) {
         QByteArray reply_data = std::move(reply->readAll());
         if (!ReplyMessageProcess(reply_data)) {
+            chat_dialog_->BotReply("GPT 返回格式错误");
             return false;
         }
         if (resource_loader::get_instance().tts_enable_) {
