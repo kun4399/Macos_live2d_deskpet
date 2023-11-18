@@ -6,9 +6,10 @@ This project uses QT6 and coca framework to create a live2d desktop pet on OSX.
 使用QT6 和 coca 框架实现将live2d模型展示到Mac的桌面上。
 
 ## Features Showcase 功能展示
-    ![image](ReadmeFiles/1.png)
 
-    ![image](ReadmeFiles/2.gif)
+![image1]("ReadmeFiles/1.png")
+
+![image2](ReadmeFiles/2.png)
 
 - **Basic support for Live2d models 基本功能:**
     - [x] Transparent background 背景透明
