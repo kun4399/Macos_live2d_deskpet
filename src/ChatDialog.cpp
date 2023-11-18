@@ -30,22 +30,57 @@ ChatDialog::ChatDialog(QWidget *parent) : QDialog(parent) {
     // 设置 QTextEdit 控件为只读
     textEdit->setReadOnly(true);
 
-    // 设置 QTextEdit 控件的背景为透明
-    textEdit->setStyleSheet("background-color: rgba(0, 0, 0, 20);");
-
-    // 添加垂直滚动条以支持滚动
-    textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    textEdit->setStyleSheet(
+            "QTextEdit {"
+            "background-color: rgba(220, 240, 255, 50%); "
+            "border: 1px solid #94B8FF; "
+            "border-radius: 10px; "
+            "padding: 1px 1px; "
+            "font-family: 'Fangzheng Lanting Black', sans-serif; font-size: 14px; color: #333333;"
+            "}"
+            "QScrollBar:vertical {"
+            "    width: 0px; /* 隐藏垂直滚动条滑块宽度 */"
+            "}"
+            "QScrollBar:horizontal {"
+            "    height: 0px; /* 隐藏水平滚动条滑块高度 */"
+            "}"
+    );
 
     // 添加文本内容
     textEdit->setPlainText("输入你的消息：");
-
-    // 将 QTextEdit 添加到布局
     layout->addWidget(textEdit);
 
     auto *inputLayout = new QHBoxLayout;
     inputLine = new QLineEdit(this);
+    // 美化输入文本框
+    inputLine->setStyleSheet(
+            "QLineEdit {"
+            "    border: 1px solid #94B8FF;"
+            "    background: rgba(220, 240, 255, 30%);"
+            "    border-radius: 5px;"
+            "    padding: 5px;"
+            "}"
+    );
+
     inputLayout->addWidget(inputLine);
     sendButton = new QPushButton("Send", this);
+    // 美化按钮
+    sendButton->setStyleSheet(
+            "QPushButton {"
+            "    background-color: #5082E8;"
+            "    color: white;"
+            "    border: 1px solid #5082E8;"
+            "    border-radius: 5px;"
+            "    padding: 5px 10px;"
+            "}"
+            "QPushButton:hover {"
+            "    background-color: #405F9E;"
+            "}"
+            "QPushButton:pressed {"
+            "    background-color: #304974;"
+            "}"
+    );
+
     inputLayout->addWidget(sendButton);
     layout->addLayout(inputLayout);
     setLayout(layout);

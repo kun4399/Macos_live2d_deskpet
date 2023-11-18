@@ -46,7 +46,12 @@ bool NetworkManager::handleNetworkReply(QNetworkReply *reply) {
     if (reply->error() != QNetworkReply::NoError) {
 //        qDebug() << "请求失败 Url:" << reply->url() << reply->errorString();
         CF_LOG_ERROR("请求失败 Url: %s, %s", reply->url().toString().toUtf8().data(), reply->errorString().toUtf8().data());
-        chat_dialog_->BotReply("请求失败");
+    if (reply->url().toString() == resource_loader::get_instance().get_gpt_url()) {
+        chat_dialog_->BotReply("GPT 请求失败");
+    } else {
+        chat_dialog_->BotReply(robot_message_);
+        chat_dialog_->BotReply("tts请求失败");
+    }
         return false;
     }
     CF_LOG_INFO("请求成功 Url: %s", reply->url().toString().toUtf8().data());

@@ -163,7 +163,7 @@ void MainWindow::action_move(QAction *a) {
         this->m_dialog->setEnabled(true);
         auto &model = resource_loader::get_instance();
         if (dialog_window_->isVisible()) {
-            dialog_window_->setWindowFlag(Qt::FramelessWindowHint, false);
+            dialog_window_->setWindowFlag(Qt::FramelessWindowHint, true);
             dialog_window_->show();
             model.update_dialog_position(dialog_window_->x(), dialog_window_->y());
             model.update_dialog_size(dialog_window_->width(), dialog_window_->height());
@@ -311,7 +311,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
     Q_UNUSED(event)
     pos_x = event->globalPosition().x();
     pos_y = event->globalPosition().y();
-//    QF_LOG_INFO("x:%d,y:%d", pos_x, pos_x);
     this->mouse_press = true;
 }
 

@@ -27,7 +27,6 @@ LAppWavFileHandler::~LAppWavFileHandler() {
 Csm::csmBool LAppWavFileHandler::Update(Csm::csmFloat32 deltaTimeSeconds) {
     Csm::csmUint32 goalOffset;
     Csm::csmFloat32 rms;
-
     // 如果在数据加载之前或者到达文件末尾时，不进行更新。
     if ((_pcmData == nullptr)
         || (_sampleOffset >= _wavFileInfo._samplesPerChannel)) {
@@ -54,6 +53,7 @@ Csm::csmBool LAppWavFileHandler::Update(Csm::csmFloat32 deltaTimeSeconds) {
 
     _lastRms = rms;
     _sampleOffset = goalOffset;
+    CF_LOG_DEBUG("RMS: %f", rms);
     return true;
 }
 
