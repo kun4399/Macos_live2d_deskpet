@@ -121,8 +121,8 @@ MainWindow::MainWindow(QWidget *parent, QApplication *mapp)
     mouse_event_ = new MouseEventHandle();
     event_handler::register_main_window(this);
     MouseEventHandle::EnableMousePassThrough(this->winId(), true);
-        std::thread t(&MouseEventHandle::startMonitoring, mouse_event_);
-        t.detach();
+    std::thread t(&MouseEventHandle::startMonitoring, mouse_event_);
+    t.detach();
 }
 
 void MainWindow::activeTray(QSystemTrayIcon::ActivationReason r) {
@@ -194,18 +194,16 @@ void MainWindow::action_change(QAction *a) {
 
     if (resource_loader::get_instance().update_current_model(counter)) {
         bool load_fail = true;
-        auto m = resource_loader::get_instance().get_current_model();
+        auto *m = resource_loader::get_instance().get_current_model();
         /// 将QString转化为char*
-        QByteArray model_name = m->name.toUtf8();
-        if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) model_name.data())) {
+        if (LAppLive2DManager::GetInstance()->ChangeScene(m->name)) {
             this->resize(m->model_width, m->model_height);
             load_fail = false;
         } else {
             int _counter = 0;
             for (auto &item: resource_loader::get_instance().get_model_list()) {
                 if (_counter != counter) {
-                    model_name = item.name.toUtf8();
-                    if (LAppLive2DManager::GetInstance()->ChangeScene((Csm::csmChar *) model_name.data())) {
+                    if (LAppLive2DManager::GetInstance()->ChangeScene(item.name)) {
                         this->resize(item.model_width, item.model_height);
                         load_fail = false;
                         auto msgIcon = QSystemTrayIcon::MessageIcon(2);
@@ -228,7 +226,7 @@ void MainWindow::action_change(QAction *a) {
             cyScreen = QApplication::primaryScreen()->availableGeometry().height();
             this->move(cxScreen / 2 - 320, cyScreen / 2 - 240);
             this->show();
-            QMessageBox::critical(this, tr("QF"), QStringLiteral("资源文件错误,程序终止"));
+            QMessageBox::critical(this, tr("CF"), QStringLiteral("资源文件错误,程序终止"));
             action_exit();
         }
     }
@@ -247,7 +245,7 @@ void MainWindow::customEvent(QEvent *e) {
     auto *event = (QfQevent *) e;
     switch (event->e) {
         case QfQevent::event_type::no_modle:
-            QMessageBox::critical(this, tr("QF"), tr(event->why));
+            QMessageBox::critical(this, tr("CF"), tr(event->why));
             CF_LOG_ERROR("no model");
             action_exit();
             break;
@@ -269,7 +267,6 @@ void MainWindow::customEvent(QEvent *e) {
                     }
                 }
             }
-
             if (load_fail) {
                 this->hide();
                 this->resize(640, 480);
@@ -278,7 +275,7 @@ void MainWindow::customEvent(QEvent *e) {
                 cyScreen = QApplication::primaryScreen()->availableGeometry().height();
                 this->move(cxScreen / 2 - 320, cyScreen / 2 - 240);
                 this->show();
-                QMessageBox::critical(this, tr("QF"), QStringLiteral("资源文件错误,程序终止"));
+                QMessageBox::critical(this, tr("CF"), QStringLiteral("资源文件错误,程序终止"));
                 action_exit();
             }
             break;

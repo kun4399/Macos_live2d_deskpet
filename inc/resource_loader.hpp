@@ -61,6 +61,8 @@ public:
 
     void set_top(bool top);
 
+    QString& get_resoures_path();
+
 public:
     int current_model_x{800};
     int current_model_y{400};

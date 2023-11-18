@@ -18,8 +18,6 @@ public:
         app_all_model_load_fail,
         app_current_model_load_fail,
         app_config_save,
-        play_tts_audio,
-        play_local_audio,
     };
 
     struct message {

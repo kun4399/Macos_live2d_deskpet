@@ -22,28 +22,23 @@ using namespace LAppDefine;
 using namespace std;
 
 namespace {
-    LAppLive2DManager* s_instance = NULL;
+    LAppLive2DManager *s_instance = NULL;
 
-    void FinishedMotion(ACubismMotion* self)
-    {
-        CF_LOG_INFO("Motion Finished: %x", (char *)self);
+    void FinishedMotion(ACubismMotion *self) {
+        CF_LOG_INFO("Motion Finished: %s", (char *) self);
     }
 }
 
-LAppLive2DManager* LAppLive2DManager::GetInstance()
-{
-    if (s_instance == NULL)
-    {
+LAppLive2DManager *LAppLive2DManager::GetInstance() {
+    if (s_instance == NULL) {
         s_instance = new LAppLive2DManager();
     }
 
     return s_instance;
 }
 
-void LAppLive2DManager::ReleaseInstance()
-{
-    if (s_instance != NULL)
-    {
+void LAppLive2DManager::ReleaseInstance() {
+    if (s_instance != NULL) {
         delete s_instance;
     }
 
@@ -51,94 +46,61 @@ void LAppLive2DManager::ReleaseInstance()
 }
 
 LAppLive2DManager::LAppLive2DManager()
-    : _viewMatrix(NULL)
-    //, _sceneIndex(0)
-{
+        : _viewMatrix(NULL) {
     _viewMatrix = new CubismMatrix44();
 
     //ChangeScene(_sceneIndex);
-     auto m = resource_loader::get_instance().get_current_model();
-     QByteArray model_name= m->name.toUtf8();
-     if(!ChangeScene((Csm::csmChar *) model_name.data()))
-     {
-         CF_LOG_ERROR("current module load fail");
-         event_handler::get_instance().report<QString>(msg_queue::message_type::app_current_model_load_fail, nullptr);
-     }
+    auto m = resource_loader::get_instance().get_current_model();
+    QByteArray model_name = m->name.toUtf8();
+    if (!ChangeScene((Csm::csmChar *) model_name.data())) {
+        CF_LOG_ERROR("current module load fail");
+        event_handler::get_instance().report<QString>(msg_queue::message_type::app_current_model_load_fail, nullptr);
+    }
 }
 
-LAppLive2DManager::~LAppLive2DManager()
-{
+LAppLive2DManager::~LAppLive2DManager() {
     ReleaseAllModel();
 }
 
-void LAppLive2DManager::ReleaseAllModel()
-{
-    for (csmUint32 i = 0; i < _models.GetSize(); i++)
-    {
-        delete _models[(int)i];
+void LAppLive2DManager::ReleaseAllModel() {
+    for (csmUint32 i = 0; i < _models.GetSize(); i++) {
+        delete _models[(int) i];
     }
 
     _models.Clear();
 }
 
-LAppModel* LAppLive2DManager::GetModel(csmUint32 no) const
-{
-    if (no < _models.GetSize())
-    {
-        return _models[(int)no];
+LAppModel *LAppLive2DManager::GetModel(csmUint32 no) const {
+    if (no < _models.GetSize()) {
+        return _models[(int) no];
     }
 
     return nullptr;
 }
 
-void LAppLive2DManager::OnDrag(csmFloat32 x, csmFloat32 y) const
-{
-    for (csmUint32 i = 0; i < _models.GetSize(); i++)
-    {
-        LAppModel* model = GetModel(i);
+void LAppLive2DManager::OnDrag(csmFloat32 x, csmFloat32 y) const {
+    for (csmUint32 i = 0; i < _models.GetSize(); i++) {
+        LAppModel *model = GetModel(i);
 
         model->SetDragging(x, y);
     }
 }
 
-void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
-{
+void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y) {
     CF_LOG_DEBUG("tap point: {x:%.2f y:%.2f}", x, y);
-    if (_models.GetSize() != 1)
-    {
+    if (_models.GetSize() != 1) {
         CF_LOG_ERROR("model size is not 1: %d", _models.GetSize());
         return;
     }
     Csm::csmInt32 hit_area = _models[0]->HitTest(x, y);
-    if (hit_area == -1)
-    {
+    if (hit_area == -1) {
         return;
     }
     _models[0]->StartRandomMotionOrExpression(hit_area, FinishedMotion);
-//    for (csmUint32 i = 0; i < _models.GetSize(); i++)
-//    {
-    // 这里可以调用表情和动作其实关键就是调用_models[i]
-//        if (_models[i]->HitTest(HitAreaNameHead, x, y))
-//        {
-//            if (DebugLogEnable)
-//            {
-//                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameHead);
-//            }
-//            _models[i]->SetRandomExpression();
-//        }
-//        else if (_models[i]->HitTest(HitAreaNameBody, x, y))
-//        {
-//            if (DebugLogEnable)
-//            {
-//                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameBody);
-//            }
-//            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
-//        }
-//    }
+
 }
 
-void LAppLive2DManager::OnUpdate() const
-{
+void LAppLive2DManager::OnUpdate() const {
     //int width, height;
     int width = LAppDelegate::GetInstance()->GetWindow()->width();
     int height = LAppDelegate::GetInstance()->GetWindow()->height();
@@ -146,24 +108,19 @@ void LAppLive2DManager::OnUpdate() const
 
     CubismMatrix44 projection;
     csmUint32 modelCount = _models.GetSize();
-    for (csmUint32 i = 0; i < modelCount; ++i)
-    {
-        LAppModel* model = GetModel(i);
+    for (csmUint32 i = 0; i < modelCount; ++i) {
+        LAppModel *model = GetModel(i);
 
-        if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
-        {
+        if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height) {
             // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
             model->GetModelMatrix()->SetWidth(2.0f);
             projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
-        }
-        else
-        {
+        } else {
             projection.Scale(static_cast<float>(height) / static_cast<float>(width), 1.0f);
         }
 
         // 必要があればここで乗算
-        if (_viewMatrix != nullptr)
-        {
+        if (_viewMatrix != nullptr) {
             projection.MultiplyByMatrix(_viewMatrix);
         }
 
@@ -184,23 +141,18 @@ void LAppLive2DManager::OnUpdate() const
 //   ChangeScene(no);
 //}
 
-bool LAppLive2DManager::ChangeScene(Csm::csmChar* name)
-{
+bool LAppLive2DManager::ChangeScene(const QString &name) {
     //_sceneIndex = index;
-    CF_LOG_DEBUG("model index: %s", name);
-    char modelPath[128];
-    char modelJsonName[128];
-    snprintf(modelPath,128,"%s%s/",ResourcesPath,(char*)name);
-    snprintf(modelJsonName,128,"%s.model3.json", (char*)name);
-
+    CF_LOG_DEBUG("model : %s", name.toStdString().c_str());
+    QString modelPath = resource_loader::get_instance().get_resoures_path() + "/" + name + "/";
+    QString modelJsonName = name + ".model3.json";
     ReleaseAllModel();
     _models.PushBack(new LAppModel());
     //_models[0]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
-     if(!_models[0]->LoadAssets(modelPath, modelJsonName))
-     {
-         ReleaseAllModel();
-         return false;
-     }
+    if (!_models[0]->LoadAssets(modelPath.toUtf8().data(), modelJsonName.toUtf8().data())) {
+        ReleaseAllModel();
+        return false;
+    }
 
     /*
      * モデル半透明表示を行うサンプルを提示する。
@@ -229,25 +181,24 @@ bool LAppLive2DManager::ChangeScene(Csm::csmChar* name)
         LAppDelegate::GetInstance()->GetView()->SwitchRenderingTarget(useRenderTarget);
 
         // 別レンダリング先を選択した際の背景クリア色
-        float clearColor[3] = { 0.0f, 0.0f, 0.0f };
+        float clearColor[3] = {0.0f, 0.0f, 0.0f};
         LAppDelegate::GetInstance()->GetView()->SetRenderTargetClearColor(clearColor[0], clearColor[1], clearColor[2]);
     }
-     return true;
+    return true;
 }
 
-csmUint32 LAppLive2DManager::GetModelNum() const
-{
+csmUint32 LAppLive2DManager::GetModelNum() const {
     return _models.GetSize();
 }
 
-void LAppLive2DManager::SetViewMatrix(CubismMatrix44* m)
-{
+void LAppLive2DManager::SetViewMatrix(CubismMatrix44 *m) {
     for (int i = 0; i < 16; i++) {
         _viewMatrix->GetArray()[i] = m->GetArray()[i];
     }
 }
 
-void LAppLive2DManager::RobotControl(Csm::csmChar *motion_group, Csm::csmChar *expression, const std::shared_ptr<QByteArray>& sound) {
+void LAppLive2DManager::RobotControl(Csm::csmChar *motion_group, Csm::csmChar *expression,
+                                     const std::shared_ptr<QByteArray> &sound) {
     CF_LOG_DEBUG("motion: %s, expression: %s", motion_group, expression);
     if (_models.GetSize() != 1) {
         CF_LOG_ERROR("model size is %d", _models.GetSize());
@@ -260,9 +211,7 @@ void LAppLive2DManager::RobotControl(Csm::csmChar *motion_group, Csm::csmChar *e
     if (motion_group != nullptr && _models[0]->MotionGroupExists(motion_group)) {
         CF_LOG_DEBUG("motion : %s start", motion_group);
         _models[0]->StartMotion(motion_group, 0, PriorityForce, FinishedMotion, sound);
-    }
-    else if (sound)
-    {
+    } else if (sound) {
         CF_LOG_DEBUG("motion : Idle start");
         _models[0]->StartMotion("Idle", 0, PriorityForce, FinishedMotion, sound);
     }

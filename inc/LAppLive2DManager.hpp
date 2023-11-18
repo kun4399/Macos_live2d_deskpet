@@ -83,7 +83,7 @@ public:
     * @brief   シーンを切り替える<br>
     *           サンプルアプリケーションではモデルセットの切り替えを行う。
     */
-    bool ChangeScene(Csm::csmChar* name);
+    bool ChangeScene(const QString &name);
 
     /**
      * @brief   モデル個数を得る

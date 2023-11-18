@@ -43,7 +43,7 @@ target_compile_definitions(Framework PUBLIC CSM_TARGET_MAC_GL)
 target_include_directories(Framework PUBLIC ${GLEW_PATH}/include)
 target_link_libraries(Framework Live2DCubismCore glew_s)
 find_package(OpenGL REQUIRED)
-SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DCF_DEBUG") # debug模式下定义QF_DEBUG, 用来控制日志输出
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DCF_DEBUG") # debug模式下定义CF_DEBUG, 用来控制日志输出
 include_directories(inc)
 include_directories(src)
 include_directories(${GLEW_PATH}/include)

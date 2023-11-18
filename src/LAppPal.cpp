@@ -41,7 +41,7 @@ csmByte *LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt *outSize) {
 
     file.open(path, std::ios::in | std::ios::binary);
     if (!file.is_open()) {
-        CF_LOG_ERROR("file open error");
+        CF_LOG_ERROR("file open error： %s", path);
         return NULL;
     }
     file.read(buf, size);

@@ -13,10 +13,8 @@
 ChatDialog::ChatDialog(QWidget *parent) : QDialog(parent) {
     setWindowTitle("聊天");
     this->setAttribute(Qt::WA_TranslucentBackground);
-//        this->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setWindowFlag(Qt::NoDropShadowWindowHint);
-//    this->setWindowFlag(Qt::WindowStaysOnTopHint);
     auto &model = resource_loader::get_instance();
     this->resize(model.dialog_width, model.dialog_height);
     this->move(model.dialog_x, model.dialog_y);
@@ -27,7 +25,6 @@ ChatDialog::ChatDialog(QWidget *parent) : QDialog(parent) {
     // 创建 QTextEdit 控件
     textEdit = new QTextEdit(this);
 
-    // 设置 QTextEdit 控件为只读
     textEdit->setReadOnly(true);
 
     textEdit->setStyleSheet(
@@ -36,7 +33,7 @@ ChatDialog::ChatDialog(QWidget *parent) : QDialog(parent) {
             "border: 1px solid #94B8FF; "
             "border-radius: 10px; "
             "padding: 1px 1px; "
-            "font-family: 'Fangzheng Lanting Black', sans-serif; font-size: 14px; color: #333333;"
+            "font-family: 'STHeiti', sans-serif; font-size: 14px; color: #333333;"
             "}"
             "QScrollBar:vertical {"
             "    width: 0px; /* 隐藏垂直滚动条滑块宽度 */"
@@ -47,7 +44,6 @@ ChatDialog::ChatDialog(QWidget *parent) : QDialog(parent) {
     );
 
     // 添加文本内容
-    textEdit->setPlainText("输入你的消息：");
     layout->addWidget(textEdit);
 
     auto *inputLayout = new QHBoxLayout;
@@ -59,6 +55,7 @@ ChatDialog::ChatDialog(QWidget *parent) : QDialog(parent) {
             "    background: rgba(220, 240, 255, 30%);"
             "    border-radius: 5px;"
             "    padding: 5px;"
+            "font-family: 'STHeiti', sans-serif; font-size: 14px; color: #333333;"
             "}"
     );
 

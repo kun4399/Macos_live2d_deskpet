@@ -303,3 +303,7 @@ const QString &resource_loader::get_gpt_key() const {
 const QString &resource_loader::get_gpt_system_prompt() const {
     return gpt_system_prompt;
 }
+
+QString& resource_loader::get_resoures_path() {
+    return resource_file_path;
+}

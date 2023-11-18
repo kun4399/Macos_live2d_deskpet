@@ -1,0 +1,25 @@
+{
+    "azure_api": {
+        "key": "",
+        "system_prompt": "",
+        "url": ""
+    },
+    "module": [
+        {
+            "height": 442,
+            "name": "Haru",
+            "width": 281
+        }
+    ],
+    "systemtray": "SystemIcon.png",
+    "userdata": {
+        "current_model": "Haru",
+        "dialog_height": 214,
+        "dialog_width": 429,
+        "dialog_x": 1035,
+        "dialog_y": 165,
+        "top": true,
+        "window_x": -14,
+        "window_y": 558
+    }
+}
