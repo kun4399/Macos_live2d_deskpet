@@ -86,7 +86,7 @@ This project uses QT6 and coca framework to create a live2d desktop pet on OSX.
     ```
 2. **clone this project:**
     ```shell
-    git clone https://github.com/kun4399/Mac_live2d_deskpet.git
+    git clone https://github.com/kun4399/Macos_live2d_deskpet.git
     ```
 
 3. **Notes:**
