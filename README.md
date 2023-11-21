@@ -77,6 +77,8 @@ This project uses QT6 and coca framework to create a live2d desktop pet on OSX.
       中的"Name"一致，这样将随机播放一个其中的动作。
     - gpt api response should be in json format, so that you can make GPT control the model's expression and motion. gpt
       api的回复应该是json格式，这样你就可以让GPT控制模型的表情和动作。
+    - if it fails to load the model, it may be that the model's motion json file is not correct(especially download from
+      the internet). You can refer this  [repo](https://github.com/Arkueid/Live2DMotion3Repair). 如果加载模型失败，可能是模型的motion json文件不正确（特别是从网上下载的）。你可以参考这个仓库。
 
 ## Compile 编译
 
